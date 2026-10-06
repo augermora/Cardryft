@@ -12,6 +12,10 @@ and Wallet remain empty project boundaries. Tests reference Core, Imaging,
 Storage, and App; App exposes internals only to its test assembly. All namespaces
 start with Cardryft. No circular or infrastructure-to-infrastructure dependencies.
 
+Milestone 4A is [Windows ↔ iPhone technical research](../research/windows-ios-device-access.md)
+only. It proposes a narrowly scoped read-only device backend for later review;
+no device code, native dependencies, communication, or Wallet access is enabled.
+
 ## State and history
 
 ArtworkSession/ArtworkTransform/ArtworkSize are immutable validated records.
