@@ -24,7 +24,7 @@ public sealed class ImageLoaderTests
             Assert.True(exclusive.CanWrite);
         }
         File.Delete(path);
-        using var rendered = new ArtworkRenderer().Render(image, new Core.ArtworkSession(path));
+        using var rendered = new ArtworkRenderer().Render(image, new Core.ArtworkSession(path), TestContext.Current.CancellationToken);
         Assert.Equal(1024, rendered.Width);
     }
 
@@ -108,7 +108,7 @@ public sealed class ImageLoaderTests
                 bitmap.Save(path, ImageFormat.Png);
             }
             using var source = new ImageLoader().Load(path);
-            using var rendered = renderer.Render(source, new Core.ArtworkSession(path, new Core.ArtworkSize(300, 100)));
+            using var rendered = renderer.Render(source, new Core.ArtworkSession(path, new Core.ArtworkSize(300, 100)), TestContext.Current.CancellationToken);
             Assert.Equal(Color.Red.ToArgb(), rendered.GetPixel(140, 50).ToArgb());
             Assert.Equal(Color.Blue.ToArgb(), rendered.GetPixel(160, 50).ToArgb());
             Assert.Equal(96, rendered.HorizontalResolution);

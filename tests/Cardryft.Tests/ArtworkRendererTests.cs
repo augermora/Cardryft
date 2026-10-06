@@ -7,6 +7,17 @@ namespace Cardryft.Tests;
 public sealed class ArtworkRendererTests
 {
     [Fact]
+    public void Render_HonorsCancellationBeforeAllocatingOutput()
+    {
+        using var files = new ImageTestFiles();
+        using var source = new ImageLoader().Load(files.CreateImage("source.png"));
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cancellation.Cancel();
+        Assert.Throws<OperationCanceledException>(() => new ArtworkRenderer().Render(source,
+            new ArtworkSession(source.Path), cancellation.Token));
+    }
+
+    [Fact]
     public void Export_UsesCanonicalSizeAndDoesNotMaskAnyPixels()
     {
         using var files = new ImageTestFiles();
@@ -31,7 +42,7 @@ public sealed class ArtworkRendererTests
     {
         using var files = new ImageTestFiles();
         using var source = new ImageLoader().Load(files.CreateImage("source.png"));
-        using var image = new ArtworkRenderer().Render(source, new ArtworkSession(source.Path));
+        using var image = new ArtworkRenderer().Render(source, new ArtworkSession(source.Path), TestContext.Current.CancellationToken);
         Assert.Equal(1024, image.Width);
         Assert.Equal(640, image.Height);
         Assert.Equal(255, image.GetPixel(0, 0).A);
@@ -47,7 +58,7 @@ public sealed class ArtworkRendererTests
         using var files = new ImageTestFiles();
         using var source = new ImageLoader().Load(files.CreateImage("transparent.png", paint: graphics =>
             graphics.Clear(Color.FromArgb(128, 80, 120, 160))));
-        using var image = new ArtworkRenderer().Render(source, new ArtworkSession(source.Path));
+        using var image = new ArtworkRenderer().Render(source, new ArtworkSession(source.Path), TestContext.Current.CancellationToken);
         Assert.Equal(128, image.GetPixel(512, 320).A);
         Assert.Equal(128, image.GetPixel(0, 0).A);
         Assert.Equal(128, image.GetPixel(image.Width - 1, image.Height - 1).A);
@@ -65,9 +76,9 @@ public sealed class ArtworkRendererTests
         }));
         var renderer = new ArtworkRenderer();
         var session = new ArtworkSession(source.Path, new ArtworkSize(200, 100));
-        using var center = renderer.Render(source, session);
-        using var right = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 1, 0)));
-        using var left = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, -1, 0)));
+        using var center = renderer.Render(source, session, TestContext.Current.CancellationToken);
+        using var right = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 1, 0)), TestContext.Current.CancellationToken);
+        using var left = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, -1, 0)), TestContext.Current.CancellationToken);
         Assert.Equal(Color.Green.ToArgb(), center.GetPixel(20, 50).ToArgb());
         Assert.Equal(Color.Red.ToArgb(), right.GetPixel(20, 50).ToArgb());
         Assert.Equal(Color.Green.ToArgb(), center.GetPixel(180, 50).ToArgb());
@@ -88,8 +99,8 @@ public sealed class ArtworkRendererTests
         }));
         var renderer = new ArtworkRenderer();
         var session = new ArtworkSession(source.Path, new ArtworkSize(200, 100));
-        using var top = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 0, 1)));
-        using var bottom = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 0, -1)));
+        using var top = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 0, 1)), TestContext.Current.CancellationToken);
+        using var bottom = renderer.Render(source, session.WithTransform(new ArtworkTransform(1, 0, -1)), TestContext.Current.CancellationToken);
         Assert.Equal(Color.Red.ToArgb(), top.GetPixel(100, 20).ToArgb());
         Assert.Equal(Color.Blue.ToArgb(), bottom.GetPixel(100, 80).ToArgb());
     }
@@ -105,8 +116,8 @@ public sealed class ArtworkRendererTests
         }));
         var renderer = new ArtworkRenderer();
         var session = new ArtworkSession(source.Path, new ArtworkSize(200, 100));
-        using var initial = renderer.Render(source, session);
-        using var zoomed = renderer.Render(source, session.WithTransform(new ArtworkTransform(4, 0, 0)));
+        using var initial = renderer.Render(source, session, TestContext.Current.CancellationToken);
+        using var zoomed = renderer.Render(source, session.WithTransform(new ArtworkTransform(4, 0, 0)), TestContext.Current.CancellationToken);
         Assert.Equal(Color.Red.ToArgb(), initial.GetPixel(20, 50).ToArgb());
         Assert.Equal(Color.Green.ToArgb(), zoomed.GetPixel(20, 50).ToArgb());
     }
@@ -118,7 +129,7 @@ public sealed class ArtworkRendererTests
         using var source = new ImageLoader().Load(files.CreateImage("private-source-name.png"));
         var renderer = new ArtworkRenderer();
         var session = new ArtworkSession(source.Path, new ArtworkSize(200, 100), new ArtworkTransform(2, 0.5, -0.5));
-        using var preview = renderer.Render(source, session);
+        using var preview = renderer.Render(source, session, TestContext.Current.CancellationToken);
         var firstPath = files.PathFor("first.png");
         var secondPath = files.PathFor("second.png");
         renderer.ExportPng(source, session, firstPath);
@@ -147,8 +158,8 @@ public sealed class ArtworkRendererTests
             graphics.FillRectangle(Brushes.Red, 0, 0, 60, 100)));
         var renderer = new ArtworkRenderer();
         var original = new ArtworkSession(source.Path, new ArtworkSize(200, 100));
-        using var initial = renderer.Render(source, original);
-        using var reset = renderer.Render(source, original.WithTransform(new ArtworkTransform(3, 1, -1)).ResetTransform());
+        using var initial = renderer.Render(source, original, TestContext.Current.CancellationToken);
+        using var reset = renderer.Render(source, original.WithTransform(new ArtworkTransform(3, 1, -1)).ResetTransform(), TestContext.Current.CancellationToken);
         for (var y = 0; y < initial.Height; y++)
         {
             for (var x = 0; x < initial.Width; x++)

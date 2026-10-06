@@ -7,8 +7,9 @@ namespace Cardryft.Imaging;
 
 public sealed class ArtworkRenderer
 {
-    public Bitmap Render(SourceImage source, ArtworkSession session)
+    public Bitmap Render(SourceImage source, ArtworkSession session, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(session);
         var width = session.OutputWidth;
@@ -39,6 +40,7 @@ public sealed class ArtworkRenderer
                     new((float)left, (float)(top + scaledHeight)),
                 },
                 new RectangleF(0, 0, source.Width, source.Height), GraphicsUnit.Pixel, attributes);
+            cancellationToken.ThrowIfCancellationRequested();
             return output;
         }
         catch

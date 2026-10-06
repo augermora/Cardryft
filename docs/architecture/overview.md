@@ -1,125 +1,123 @@
 # Architecture overview
 
-Cardryft is a modular .NET 10 Windows x64 application. Milestone 2 provides a
-functional offline PNG/JPEG artwork editor with live pan/zoom and PNG export.
-The executable is framework-dependent and uses the installed .NET 10 Windows
-Desktop runtime. An explicit asInvoker manifest avoids elevation requests.
+Cardryft is a modular .NET 10 Windows x64 application. Milestone 3 adds local
+projects, state history, and responsive preview work to the offline editor.
+The asInvoker application uses the installed Windows Desktop runtime.
 
 ## Dependency direction
 
-```text
-Cardryft.App ----> Cardryft.Core
-             |--> Cardryft.Imaging ----> Cardryft.Core
-             |--> Cardryft.Device  ----> Cardryft.Core
-             |--> Cardryft.Wallet  ----> Cardryft.Core
-             `--> Cardryft.Storage ----> Cardryft.Core
+App references Core, Imaging, Storage, Device, and Wallet. Imaging and Storage
+reference only Core. Core uses no UI/platform APIs and performs no I/O. Device
+and Wallet remain empty project boundaries. Tests reference Core, Imaging,
+Storage, and App; App exposes internals only to its test assembly. All namespaces
+start with Cardryft. No circular or infrastructure-to-infrastructure dependencies.
 
-Cardryft.Tests --> Cardryft.Core, Cardryft.Imaging, Cardryft.App
-```
+## State and history
 
-Core has no project or package dependencies and no WinForms or platform types.
-Infrastructure libraries depend only on Core. There are no reverse references,
-infrastructure-to-infrastructure references, or circular dependencies. Every
-namespace starts with Cardryft. Shared build properties enable nullable reference
-types, implicit usings, and x64 compilation. The SDK selector accepts stable
-.NET 10 feature bands.
+ArtworkSession/ArtworkTransform/ArtworkSize are immutable validated records.
+ArtworkSize.Canonical is the provisional 1024 × 640 Cardryft editor/export size;
+it is not an Apple Wallet specification. Zoom is 1–4 and signed offsets are -1–1.
+EditorDocument stores the current session, saved snapshot, and project identity.
+Dirty state is value inequality against the saved snapshot, including undo/redo.
+History stores up to 100 transforms, no raster or full-size image. Undo moves the
+previous transform to redo; new edits invalidate redo; identical edits do nothing.
+Reset uses the normal edit path. New/Open/import/replacement clear history.
+Slider changes are individual steps; drag gestures are not grouped.
 
-## Responsibilities and present behavior
+## Storage
 
-- **App:** Program composes ImageLoader, ArtworkRenderer, and ArtworkEditor.
-  ArtworkEditor coordinates session/pixel ownership and preserves the previous
-  session if an operation fails. MainForm supplies file dialogs, sliders, and
-  user feedback. ArtworkPreview displays the rectangular rendered bitmap inside
-  an antialiased rounded shape, scaling its display rectangle proportionally on
-  resize. This presentation mask never modifies the bitmap or performs artwork
-  cropping/export. App owns the preview corner radius and placeholder decoration.
-- **Core:** ArtworkProject remains intact. ArtworkSession, ArtworkTransform,
-  and ArtworkSize are immutable validated records with get-only properties.
-  They contain a source path, transform, and output dimensions without raster,
-  UI, platform, payment, or device types. Core performs no I/O.
-- **Imaging:** ImageLoader validates and detaches pixels. ArtworkRenderer owns
-  cover scaling, zoom, crop positioning, rectangular raster rendering, and PNG encoding.
-  SourceImage owns/disposes its raster. There is no WinForms reference or UI code.
-- **Device:** Reserved for device abstractions. No discovery, pairing, or transport.
-- **Wallet:** Reserved for customization abstractions. No Apple Wallet access.
-- **Storage:** Reserved for project persistence and backup abstractions. No file I/O.
-- **Tests:** Existing domain tests remain unchanged. Additional xUnit v3 tests
-  cover transform boundaries/reset, loading failures/resource limits, source
-  unlocking, EXIF orientation, rectangular/opaque export corners, source alpha,
-  zoom/pan crops, dimensions, deterministic export, matching artwork pixels,
-  failed export preservation, and preview masking without bitmap mutation.
-  App exposes internals to the test assembly so an STA test can paint/resize the
-  production WinForms preview control. This adds no production dependency.
+ProjectStore serializes `.cardryft` JSON version 1: version, sourcePath, zoom,
+horizontalOffset, verticalOffset, outputWidth, outputHeight. Fields are required;
+unknown fields/versions are rejected. Read size is capped at 64 KiB, depth at 8;
+Core validates all geometry. References must resolve to local PNG/JPEG paths.
+No executable content, binary payload, polymorphic type activation, payment/device
+metadata, or timestamps are stored. Save writes and flushes a unique sibling temporary
+file before replacing the destination and cleans up on failure.
 
-Device, Wallet, and Storage intentionally have no implementations. No iPhone or
-Apple Wallet access exists. Concrete image services are sufficient for this
-milestone; no interface hierarchy or DI container is needed.
+Storage normalizes source paths and saves references relative to the project directory
+whenever both paths share a drive, using `/` separators and allowing `..`. Different
+drives fall back to an absolute path. Load resolves relative paths against the project
+directory, returning an absolute normalized path to the editor; drive-relative/rooted
+but incomplete references are rejected. Existing absolute version 1 files remain valid.
+The schema/version is unchanged; older absolute-only readers cannot read relative references.
+Save As recomputes references against its destination. Moving both files preserves
+portability only when their relative layout is maintained. No image is copied/embedded.
+The source reference strategy avoids duplicate artwork but requires the image on reopen.
+App retains project state if the referenced image cannot be decoded,
+shows a warning, and permits replacement through Import Image. Replacement preserves
+geometry, changes the source reference, and marks the session dirty. Failed JSON
+loads/imports leave the old document/source intact. Save As changes project identity.
 
-## Artwork geometry and rendering
+ApplicationDataPaths centralizes `%LOCALAPPDATA%\Cardryft\recent-projects.json`,
+using Environment.SpecialFolder.LocalApplicationData. Its root can be injected;
+RecentProjects also accepts an explicit file path so tests never write real AppData.
+Default resolution is deferred until I/O; Read treats unavailable storage as empty,
+and Add creates the directory on demand, reporting failures to App's nonfatal warning.
+No administrator privileges or executable-directory writes are needed.
+RecentProjects stores at most eight deduplicated project paths. Missing entries are ignored. Corrupt
+lists are treated as empty; write failures are nonfatal warnings after successful
+open/save. There is no image MRU, telemetry, cloud service, or roaming configuration.
+No migration from the former executable-local list is performed. Project/recent
+paths are plaintext; review projects before sharing because absolute fallbacks may
+disclose local directories. Projects embed no image, payment, or device data.
 
-ArtworkSize.Canonical centralizes the provisional Cardryft editor/export
-**1024 × 640** canvas (1.6:1).
-This approximate landscape artwork ratio and resolution provide a crisp desktop
-preview with about 2.5 MiB per output raster; they are not an Apple Wallet asset
-specification or Apple Wallet-required size. It can be replaced after future
-device/Wallet research. Sessions can provide another validated landscape size (64–4096
-pixels per side); the first UI deliberately exposes only the canonical size.
-The preview-only corner radius is displayed card height / 16. Imaging has no
-corner-radius or preview-mask concept.
+## Imaging and ownership
 
-For source size (Sw, Sh) and output (W, H):
+ImageLoader checks PNG/JPEG extensions/signatures/dimensions before native decoding:
+25 MiB encoded, 8192 per side, 32 million pixels. It verifies the decoded format,
+normalizes EXIF orientation, and detaches pixels into a metadata-free 96-DPI bitmap,
+closing the source stream. Core contains paths/values only; SourceImage owns pixels.
+
+ArtworkRenderer owns all artwork geometry:
 
 ```text
 scale = max(W / Sw, H / Sh) * zoom
-scaledWidth = Sw * scale; scaledHeight = Sh * scale
-left = (W - scaledWidth) / 2 + horizontalOffset * (scaledWidth - W) / 2
-top  = (H - scaledHeight) / 2 + verticalOffset * (scaledHeight - H) / 2
+left = (W - Sw * scale) / 2 + horizontalOffset * (Sw * scale - W) / 2
+top  = (H - Sh * scale) / 2 + verticalOffset * (Sh * scale - H) / 2
 ```
 
-Zoom ranges from 1 to 4 relative to cover scale. Signed offsets range from -1
-to 1, representing the available crop travel. Positive offsets move pixels
-right/down; an axis without overflow does not move. The image always covers the
-card bounds. Reset restores zoom 1 and zero offsets while preserving source/size.
+It draws a bicubic crop into a rectangular 32-bit raster. Export uses this same
+renderer and encodes a fresh PNG, preserving source alpha without paths/EXIF or
+preview masks. ArtworkPreview scales the result proportionally and paints a rounded
+UI shape with radius displayed height / 16. It never changes the source/result pixels.
+Repeated output is deterministic on the same Windows raster stack, not necessarily
+byte-identical across Windows/.NET versions.
 
-ImageLoader accepts local PNG/JPG/JPEG only. It checks encoded length, signatures,
-and dimensions before native decoding: 25 MiB, 8192 pixels per side, and 32
-million pixels total. It validates the decoded format/dimensions, applies JPEG
-EXIF orientation, then copies in explicit pixel coordinates into a fresh 32-bit,
-96-DPI raster, avoiding display/source-DPI scaling. Render rasters also use
-96 DPI and pixel units. The file/decoder stream
-is closed after import; metadata and embedded color profiles are not retained.
+## Async orchestration
 
-ArtworkRenderer draws a bicubic crop to the full rectangular output raster.
-Preview presents this same bitmap inside a rounded UI shape; export invokes
-the same renderer and writes the complete rectangle as PNG. No radius mask,
-border, shadow, chrome, or other preview decoration enters the export. Opaque
-sources retain opaque corners; genuine source transparency is preserved.
-Export encodes to a unique sibling temporary file before replacing the selected
-destination, cleaning up on failure. Original source paths/EXIF are not embedded.
-Repeated renders/exports are deterministic for the same pixels/state on the same
-Windows raster stack; cross-version/platform byte identity is not guaranteed.
+ArtworkEditor owns document/source/preview and coordinates concrete storage and
+imaging services. File decoding/parsing use Task.Run; only validated successful
+results replace current state. UI menu/control mutations are serialized by the
+WinForms synchronization context. File operations temporarily disable editing.
 
-## Dependencies and deferred decisions
+LatestPreview is an App orchestration helper with one async pump and one replaceable
+pending session. Transform edits immediately change document state on the UI context.
+The pump calls Task.Run for render, cancels superseded work, compares monotonically
+increasing revisions, disposes stale bitmaps/errors, and publishes only current
+results back on the UI context. No full-size source is cloned per slider event.
+Cancellation is checked before/after GDI+ rendering; native calls cannot be aborted
+mid-call. New/Open/replacement await StopAsync before replacing/disposal of pixels.
+Close cancels/awaits the pump before editor disposal. During a file operation the
+form remains open and asks the user to close again once it completes. Export is
+serialized with file operations and disables editing while it waits
+for previews, then uses synchronous render/encoding to avoid concurrent GDI+ access.
 
-Imaging uses System.Drawing.Common 10.0.12, with Microsoft.Win32.SystemEvents
-10.0.12 as a transitive dependency. It targets net10.0-windows to express the
-Windows GDI+ requirement without referencing WinForms. App and raster tests also
-target net10.0-windows; Core remains net10.0. The preview test uses the Windows
-Desktop framework and references App. Tests require
-Microsoft.NET.Test.Sdk 17.14.1, xunit.v3.mtp-off 4.0.1, and
-xunit.runner.visualstudio 4.0.0; the adapter is a private test dependency.
-The xUnit v3 test project is an executable, with its entry point supplied by
-xUnit. It retains VSTest support for dotnet test. The mtp-off package excludes
-Microsoft Testing Platform and its telemetry dependencies. No database,
-logging/telemetry package, or device SDK is introduced.
+The preview can briefly show an older accepted frame while a newer request renders;
+a stale completion can never replace the current frame. No image cache, DI container,
+service hierarchy, background autosave, layers, or persistence of undo history.
 
-Restore explicitly uses the repository's NuGet.Config rather than per-user
-configuration. The validation script confines caches and temporary files to
-.local and overrides legacy extension-SDK probing to avoid inaccessible
-per-user SDK directories. .NET targeting packs still come from the installed SDK.
+## Packages, tests, and limitations
 
-Rendering/import are synchronous and large images may briefly pause the UI.
-The initial decoded frame is used; animation, color-managed editing, rotation
-controls, layers, undo, project persistence, and backups remain deferred.
-Device/Wallet workflows require separate requirements and security review.
-See the [threat model](../security/threat-model.md).
+No Milestone 3 packages were added. Imaging uses System.Drawing.Common 10.0.12
+(transitive Microsoft.Win32.SystemEvents 10.0.12). Tests retain Microsoft.NET.Test.Sdk
+17.14.1, xunit.v3.mtp-off 4.0.1, xunit.runner.visualstudio 4.0.0. App/Imaging/tests
+use net10.0-windows; Core/Storage/inactive projects remain net10.0. Tests exercise
+round-trip/version/malformed storage, missing source, history/dirty state, recent
+trimming, drop validation, controlled stale/canceled renders, and existing pixel/export
+behavior. No device/Wallet or networking implementation exists.
+
+Native decoding is not sandboxed. Large sources can consume substantial bounded
+memory; initial decoding temporarily holds old/new/native pixel buffers. Export/save
+can briefly pause. Initial frame only, embedded profiles ignored, no source hash or
+portable embedded bundles, autosave, backups, encrypted storage, layers,
+undo grouping, or file relocation search. See the [threat model](../security/threat-model.md).

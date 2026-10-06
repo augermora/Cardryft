@@ -1,66 +1,112 @@
 # Cardryft
-Privacy-first, open-source Windows application for creating and managing custom Apple Wallet card artwork.
 
-## Milestone 2: offline artwork editor
+Privacy-first, open-source Windows x64 desktop editor for custom card artwork.
+Cardryft works offline and does not interact with Apple Wallet, iPhones, devices,
+private iOS protocols, payment credentials, telemetry, networking, or cloud services.
 
-Import a local PNG, JPG, or JPEG, adjust zoom and horizontal/vertical position,
-reset to centered cover, and export the rectangular artwork as a PNG. The preview
-updates immediately and maintains its landscape aspect ratio when resized.
-Cardryft does not yet interact with Apple Wallet or devices. There is no
-telemetry, application networking, cloud storage, or administrator requirement.
+## Milestone 3: projects and editing
 
-### Editing and export
+- Import or drop one local PNG/JPG/JPEG; invalid imports preserve current work.
+- Rounded, resizable artwork preview with 100–400% zoom and readable signed pan
+  percentages. Pan is a fraction of available crop travel; positive moves right/down.
+- Reset, Undo (Ctrl+Z), and Redo (Ctrl+Y). History holds up to 100 transforms, not
+  decoded images. Each slider change is one history step; a new edit clears redo.
+  Import/replacement, Open, and New clear history. Reset is undoable.
+- File > New (Ctrl+N), Open (Ctrl+O), Save (Ctrl+S), Save As (Ctrl+Shift+S), Exit,
+  and Recent Projects. An asterisk in the title marks unsaved state. New/Open/Exit
+  and replacing loaded artwork prompt Save / Discard / Cancel. Failed saves do
+  not clear dirty state. Undoing to the saved snapshot clears it.
+- Export a rectangular PNG through Save File. Rounded masking belongs only to
+  the preview. Exports contain no chrome, borders, shadows, masks, or source metadata;
+  genuine source transparency is retained.
 
-- **Import Image:** chooses a local PNG/JPEG. The source is copied into memory
-  and is not locked after import; importing a replacement starts a new session.
-- **Zoom:** 100–400%, relative to the initial scale that covers the canvas.
-- **Position:** -100–100% of the available crop travel on each axis. Positive
-  offsets move the image right/down. An axis without overflow has no travel.
-- **Reset:** restores 100% zoom and zero offsets without changing the source.
-- **Export PNG:** chooses a destination through Save File; exports artwork only,
-  as a full rectangle, with no preview mask, UI overlays, or copied source metadata.
-  Transparency is retained only where it comes from the source artwork.
+ArtworkSize.Canonical centralizes the provisional **1024 × 640** editor/export
+size (1.6:1). It offers a crisp landscape preview at modest memory cost. This is
+Cardryft's convention, not an Apple Wallet-required size, and can be replaced
+following future device/Wallet research. This UI uses the canonical size.
 
-The provisional Cardryft editor/export size is **1024 × 640 pixels** (1.6:1). This approximate
-landscape card ratio offers a crisp desktop preview at modest memory cost and
-is twice a 512 × 320 display size. It is an artwork convention, not an Apple
-Wallet asset specification. The size is centralized in Core's ArtworkSize.Canonical
-and configurable through ArtworkSession; this first UI uses the canonical size.
-It can be replaced after future device/Wallet research; it is not an Apple
-Wallet-required size.
+## Project format and sources
 
-Preview and export share the same renderer: centered cover scale → zoom → bounded
-pan → bicubic crop → rectangular raster. App paints this raster inside an
-antialiased rounded preview shape without changing its pixels. Export encodes
-the full raster, including its corners. PNG transparency is preserved;
-JPEG EXIF orientation is applied before editing. The decoder ignores embedded
-color profiles and does not copy metadata into the new raster or output PNG.
+`.cardryft` files are readable JSON, format **version 1**:
 
-### Current limits
+```json
+{
+  "version": 1,
+  "sourcePath": "images/source.png",
+  "zoom": 1.5,
+  "horizontalOffset": 0.2,
+  "verticalOffset": -0.1,
+  "outputWidth": 1024,
+  "outputHeight": 640
+}
+```
 
-Images must be at most 25 MiB, 8192 pixels per side, and 32 million pixels total.
-Unsupported, corrupt, oversized, missing, or inaccessible files show a recoverable
-error and preserve the current session. UNC and mapped network paths are rejected.
-Native Windows image decoding is not a security sandbox. Imports/renders are
-synchronous; large images may briefly pause the UI. Animated/multipage editing,
-color-managed editing, rotation controls, text, layers, undo, project persistence,
-and backups are not implemented. Only the decoder's initial frame is used.
+Projects reference the original image. Saving prefers a relative path from the
+project's directory, including parent-directory (`..`) paths. Opening resolves it
+against that directory, independent of the application's working directory. Moving
+the project and image together preserves references if their relative layout stays
+the same. Sources on a different drive use an absolute local path as a fallback.
+Version 1 remains unchanged; existing absolute references still load. Older Cardryft
+builds that only accepted absolute references cannot open new relative references.
+No image content, arbitrary content, or payment/device data is copied or embedded.
+Projects remain dependent on the original image; deleting/changing it affects reopening.
+If it is missing or unreadable, Cardryft opens the project state with a warning;
+Import Image selects a replacement while preserving transform and output size.
+Replacement marks the project dirty and clears history.
 
-## Requirements and validation
+Storage rejects unknown versions/fields, missing fields, invalid transforms/sizes,
+non-image references, network paths, and project files over 64 KiB. Project saves
+encode to a sibling temporary file, flush, and replace the destination; failures
+preserve the previous file. Save As moves the current project identity to the new path.
 
-- Windows x64 with a .NET 10 SDK and Windows desktop targeting support.
-- NuGet connectivity for the initial dependency restore; editing then works offline.
+Recent Projects keeps at most eight deduplicated project paths in
+`%LOCALAPPDATA%\Cardryft\recent-projects.json`. Storage resolves Windows'
+LocalApplicationData special folder and creates the Cardryft directory only when
+writing, without administrator privileges. Tests inject isolated repository-local
+paths instead of writing to the user's AppData. It stores no recent image
+list. Missing entries are ignored; malformed/unwritable recent storage cannot
+prevent successful project open/save. Previous executable-local lists are not migrated.
+Project/recent files contain unencrypted local paths; projects may still disclose an
+absolute path when a relative reference is impossible. Review `.cardryft` files
+before sharing if local path disclosure matters. There is no Cardryft cloud synchronization.
 
-From the repository root, run:
+## Rendering, safety, and limitations
+
+Image loading and preview rendering run off the UI thread. One serial preview
+worker has one replaceable pending request; newer edits cancel older work and
+revision checks dispose stale results instead of displaying them. GDI+ native
+calls are not interruptible mid-call; cancellation is checked around them.
+Source replacement/New/Open await old preview work before disposing its image.
+Closing awaits worker completion; during a file operation, close waits for the
+operation to finish by keeping the window open and asking the user to close again.
+
+One decoded source is reused for transform edits; there is no image history or
+complex cache. Limits remain **25 MiB**, **8192 pixels per side**, and **32 million
+pixels**. Imports release source file handles. EXIF orientation is normalized;
+source DPI does not affect pixel geometry. Rendering uses cover scale → zoom →
+bounded pan → bicubic rectangular crop. Preview presentation never mutates artwork.
+PNG export awaits preview work and then renders/encodes synchronously for safe
+image ownership; large exports can briefly pause the UI. JSON save/recent I/O is
+also synchronous and small. Native decoding runs in-process, not in a sandbox.
+
+Only the initial decoded frame is used; embedded color profiles are ignored.
+No layers, rotation controls, text editing, history grouping, autosave, backups,
+source relocation search, source integrity hash, or encrypted project storage.
+File-picker navigation, filesystem links, and OS synchronization are outside the
+application's controls; local-path checks do not comprehensively resolve reparse points.
+
+## Build and validation
+
+Requires Windows x64, .NET 10 SDK and Windows Desktop runtime/targeting support.
+Normal NuGet connectivity is needed for initial restore; editing works offline.
+From the repository root:
 
 ```powershell
 .\scripts\validate.ps1
 ```
 
-The script keeps .NET CLI state, NuGet caches, and temporary files in the ignored
-`.local/` directory and disables CLI telemetry. Restore uses the repository's
-`NuGet.Config` with nuget.org as the only package source. The script executes these commands in order
-and stops on failure:
+The script keeps CLI state/caches/temp files in ignored `.local`, disables CLI
+telemetry, and executes:
 
 ```powershell
 dotnet restore
@@ -68,38 +114,16 @@ dotnet build -c Release
 dotnet test -c Release
 ```
 
-Open `Cardryft.sln` in Visual Studio with .NET 10 support, or launch the editor
-after validation with:
+Open `Cardryft.sln` in Visual Studio or launch after building:
 
 ```powershell
 dotnet run --project src/Cardryft.App -c Release --no-restore
 ```
 
-## Projects
+Core owns validated value state/history, Imaging owns raster operations, Storage
+owns project/recent JSON, and App owns WinForms and orchestration. Device and Wallet
+remain empty boundaries. No new packages were required for Milestone 3; Imaging
+uses System.Drawing.Common 10.0.12 and tests use xUnit v3.
 
-| Project | Responsibility |
-| --- | --- |
-| `src/Cardryft.App` | WinForms UI and application composition root |
-| `src/Cardryft.Core` | UI-independent domain models, validation, and future shared contracts |
-| `src/Cardryft.Imaging` | Bounded image loading, raster rendering, scaling/cropping, and PNG export |
-| `src/Cardryft.Device` | Future device abstractions; no communication |
-| `src/Cardryft.Wallet` | Future Wallet customization abstractions; no Wallet access |
-| `src/Cardryft.Storage` | Future project persistence and backup abstractions |
-| `tests/Cardryft.Tests` | Domain, raster pipeline, and WinForms preview tests using xUnit v3 |
-
-Device, Wallet, and Storage remain project boundaries without implementations.
-Core is independent; Imaging has no WinForms code. The only production package
-is System.Drawing.Common 10.0.12 for Windows raster graphics.
-
-See [architecture](docs/architecture/overview.md), the
-[threat model](docs/security/threat-model.md), and [contributor instructions](AGENTS.md).
-
-## Security and license
-
-Cardryft handles artwork, not payment credentials. Do not supply card numbers,
-CVVs, PINs, or bank credentials. Cardryft does not access Apple Wallet or
-iPhones, implement private iOS protocols, or store pairing records. Local
-secrets, certificates, device data, backups, and diagnostic dumps are excluded
-from Git; ignore rules are not encryption or a substitute for careful review.
-
-Licensed under the [MIT License](LICENSE).
+See [architecture](docs/architecture/overview.md), [threat model](docs/security/threat-model.md),
+and [contributor instructions](AGENTS.md). Licensed under the unchanged [MIT License](LICENSE).

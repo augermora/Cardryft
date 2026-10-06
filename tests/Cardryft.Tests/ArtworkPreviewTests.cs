@@ -25,7 +25,7 @@ public sealed class ArtworkPreviewTests
                 }));
                 var renderer = new ArtworkRenderer();
                 var session = new ArtworkSession(source.Path, transform: new ArtworkTransform(2, 0.25, -0.5));
-                using var artwork = renderer.Render(source, session);
+                using var artwork = renderer.Render(source, session, TestContext.Current.CancellationToken);
                 var beforePath = files.PathFor("before.png");
                 var afterPath = files.PathFor("after.png");
                 renderer.ExportPng(source, session, beforePath);

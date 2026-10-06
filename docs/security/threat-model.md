@@ -1,59 +1,70 @@
-# Threat model: Milestone 2
+# Threat model: Milestone 3
 
 ## Scope and assets
 
-The application imports local PNG/JPEG artwork into memory, previews transforms,
-and exports a full rectangular PNG to a user-selected local path. Rounded
-preview masking is UI-only and does not remove exported corner pixels. The
-provisional 1024 × 640 size is Cardryft's editor/export convention, not an
-Apple Wallet requirement. Core validates immutable editor
-state. No project persistence, backups, network clients, telemetry, external
-process execution, device communication, or Apple Wallet access exists. Tests
-use synthetic names and rasters; no payment/device records are collected.
+Cardryft imports local PNG/JPEG into memory, previews transforms, saves/opens local
+.cardryft JSON, stores recent project paths, and exports rectangular PNGs. No device,
+Apple Wallet, payment, network, telemetry, cloud client, privileged access, or external
+process execution exists. Development validation uses the allowed .NET/NuGet toolchain.
+The provisional 1024 × 640 size is Cardryft's convention, not an Apple Wallet requirement.
 
-Assets to protect are user artwork, in-memory source paths, user privacy,
-repository integrity, and build dependency integrity. Artwork and display names
-can themselves reveal personal information. Users should import artwork without
-payment data; this editor does not inspect image content or redact sensitive pixels.
+Assets include artwork, paths, project edits, local files, privacy, and repository
+integrity. Source/project/recent paths and artwork may disclose personal information;
+project/recent JSON and exports are plaintext, not encrypted. The editor does not
+redact sensitive pixels; users must not supply payment credentials or card data.
 
-## Trust boundaries
+## Boundaries and controls
 
-- App accepts file paths and slider values; Core bounds zoom, offsets, and output sizes.
-- Local file imports cross into the Windows GDI+ native decoder through Imaging.
-- PNG export crosses into the user's filesystem through Imaging.
-- NuGet restore crosses a development-time network boundary to obtain raster and test
-  dependencies. It is distinct from application network communication.
-- Device and Wallet boundaries are inactive and prohibited in this milestone.
+- Core validates geometry and holds bounded value-only history/saved snapshots.
+- Imaging checks signatures/size/dimensions before in-process Windows GDI+ decoding.
+  Limits remain 25 MiB, 8192 per side, 32 million pixels. Imports release source
+  file handles; fresh rasters omit source metadata and normalize orientation/DPI.
+- Storage treats project JSON as untrusted: 64 KiB/depth 8 bounds, required fields,
+  exact version 1, unknown-field rejection, domain validation, and local image-only
+  source references. No polymorphic deserialization or executable activation.
+- Project persistence references original images, avoiding extra sensitive copies.
+  Relative references resolve against the project directory and may include `..`;
+  these are image references, not extraction destinations or embedded payloads.
+  Absolute local paths remain a fallback when relative paths are impossible (different
+  drives). Review `.cardryft` files before sharing if local path disclosure matters.
+  No image content, payment data, device data, or identifiers are embedded.
+  Missing/corrupt sources preserve project values and require explicit replacement.
+  References are not immutable: an image changed on disk changes later reopening.
+- Save/Save As and export encode to unique sibling temporary files before replacement;
+  failures preserve prior destinations and clean up temp files. Save As and export
+  use overwrite-confirming dialogs. Explicit Save intentionally overwrites the
+  current project. Dirty state only clears after successful project save.
+- New/Open/Exit/replacing loaded artwork offer Save / Discard / Cancel. History
+  has 100 transforms, not image copies. File operation failure preserves current state.
+- Recent projects retain eight local project paths only. Missing entries are ignored;
+  corrupt lists cannot block use; unwritable storage is a nonfatal warning. There is
+  no app cloud sync or roaming store. Storage uses Windows LocalApplicationData at
+  `%LOCALAPPDATA%\Cardryft\recent-projects.json`, creating directories only on write
+  without administrator privileges. Tests inject isolated repository-local paths.
+  Data is not encrypted or coordinated across multiple concurrent instances.
+- Preview work is serial/coalesced; cancellation/revision checks discard stale results.
+  Source disposal waits for work completion. Native decoding/rendering cannot be
+  interrupted mid-call; this is resource/lifetime control, not a codec sandbox.
+- UNC/mapped network paths are rejected before file access. Reparse points/filesystem
+  links are not comprehensively resolved; OS sync, remote-backed mounts not reported
+  as network drives, file-picker navigation, and a compromised host remain outside
+  the guarantee. User-selected files can be in an OS-synchronized directory.
+- asInvoker manifest, no device tools/private protocols/pairing records, no network
+  clients or telemetry packages. NuGet restore is development-only, not app networking.
 
-## Threats, current controls, and remaining work
+## Remaining risks and restrictions
 
-| Threat | Current control | Remaining risk or future requirement |
-| --- | --- | --- |
-| Collection or disclosure of payment/device secrets | No relevant data fields, integrations, pairing, network clients, or telemetry | Do not add card numbers, CVVs, PINs, bank credentials, or pairing storage |
-| Malformed or resource-exhausting images | Extension/signature checks; PNG/JPEG dimensions inspected before decoding; 25 MiB encoded, 8192 per side, 32 million pixel limits; decoded format/dimensions checked; recoverable errors | Native decoding runs in process, not in a sandbox. Limits reduce allocation risks but cannot eliminate codec vulnerabilities; keep Windows/.NET updated |
-| Source file locks or metadata disclosure | Import flattens pixels into a fresh bitmap, closes the stream, normalizes EXIF orientation, and does not copy source properties; output is encoded from a new raster | Paths remain in process memory. Image pixels may contain sensitive information; no content redaction is performed |
-| Unsafe paths, accidental overwrite, or partial export | UNC/mapped network paths rejected; Save File prompts before overwrite; PNG-only output; encode to unique sibling temp then replace; failure cleanup | Filesystem links/reparse points are not comprehensively resolved. Exports are unencrypted user files and may be located in an OS-synchronized directory |
-| Sensitive artifacts entering Git | Ignore rules cover local secrets, .env files, certificates, pairing/device directories, backups, and dumps | Ignore patterns cannot protect already tracked or differently named files; inspect diffs and untracked files |
-| Elevated access | App manifest requests asInvoker; no privileged operations | Review any future capability that requests broader access |
-| Dependency compromise | System.Drawing.Common 10.0.12 uses the Windows raster stack; required Microsoft.Win32.SystemEvents dependency; three pinned test packages; xUnit v3 mtp-off excludes Microsoft Testing Platform/telemetry dependencies | Pinning does not establish safety; review dependency changes and transitive packages |
-| Accidental external tool or device execution | No device tools, private protocols, or downloaded binaries are invoked | Keep device and Wallet functionality inactive until explicitly scoped and reviewed |
+Keep Windows/.NET patched; native codec vulnerabilities are not eliminated by
+format/resource checks. Initial decoding can hold multiple bounded pixel buffers;
+large images consume memory and GDI+ work may take time. UI decoding/preview is async,
+while export and small JSON writes remain synchronous. Filesystem race conditions,
+concurrent application instances, source integrity hashing, autosave, crash recovery,
+secure backups, encrypted projects, and portable project bundles are not addressed.
 
-## Restrictions and assumptions
-
-Do not access Apple Wallet, connect to iPhones, request payment credentials,
-process card numbers/CVVs/PINs/bank credentials, implement private iOS protocols,
-store pairing records, introduce telemetry/application networking, or request
-administrator privileges. Normal NuGet restore and .NET/xUnit validation are
-allowed. Development writes stay inside C:\Dev\Cardryft; the validation script
-keeps CLI state, NuGet caches, and temporary data in ignored .local directories.
-No Git configuration/history changes, autonomous commits, pushes, or publication.
-
-This milestone assumes a trusted local Windows account and installed .NET SDK.
-It does not protect against a compromised host, sandbox native codecs, encrypt
-exports, secure backups, or claim secure Wallet integration. File format checks
-are not a guarantee that an arbitrary image is safe. Imports/renders are
-synchronous; large images can temporarily pause the UI. Only the initial frame
-is used, with no color-managed editing. No session history, project persistence,
-autosave, cloud client, or backup feature is present. File-picker navigation and
-OS file synchronization are outside Cardryft's control. Revisit this document
-before expanding any input, storage, or integration surface.
+Preserve repository ignores for secrets/.env/certificates/device/pairing/backups/dumps;
+inspect all diffs/untracked files. CLI/cache/temp state remains in repository .local;
+recent runtime data uses the user's LocalApplicationData directory. Development
+validation writes only repository-local fixtures/caches, never real user AppData.
+No Git history,
+configuration, commits, pushes, or publication changes. Revisit the model before
+adding new formats, storage surfaces, services, device, or Wallet integration.

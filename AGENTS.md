@@ -5,7 +5,7 @@
 Cardryft is a privacy-first, open-source Windows x64 desktop application for
 creating and managing custom Apple Wallet card artwork. It uses C# / .NET 10,
 WinForms, xUnit, and the MIT license. Preserve LICENSE and existing repository
-files. Milestone 2 adds an offline image artwork editor. Device and Apple Wallet
+files. Milestone 3 adds offline project persistence, history, and async preview. Device and Apple Wallet
 integrations remain prohibited.
 
 ## Architecture
@@ -19,7 +19,11 @@ integrations remain prohibited.
   infrastructure libraries. Keep UI types out of Core.
 - Avoid circular dependencies, speculative service interfaces, and unnecessary
   abstractions. Imaging owns raster loading/rendering/export; keep image processing
-  out of WinForms event handlers. Device, Wallet, and Storage remain deferred.
+  out of WinForms event handlers. Storage owns versioned project/recent JSON.
+  Centralize per-user LocalApplicationData paths and project-relative source
+  normalization/resolution in Storage. Keep absolute version 1 references readable.
+  Device and Wallet remain deferred. Keep history value-only and bounded; serialize
+  preview work, suppress stale results, and await workers before disposing image data.
 - Keep artwork rasters rectangular; rounded masking/decorations belong only to
   App's preview. Share transform/crop logic through Imaging. ArtworkSize.Canonical
   is a provisional Cardryft editor/export size, not an Apple Wallet requirement.
@@ -40,18 +44,25 @@ integrations remain prohibited.
 
 ## Security restrictions
 
-For Milestone 2:
+For Milestone 3:
 
 - Do not access Apple Wallet, connect to an iPhone, or implement private iOS protocols.
 - Do not request payment credentials or process card numbers, CVVs, PINs, or bank credentials.
 - Do not introduce telemetry or application network communication.
 - Keep image imports bounded, reject unsupported/corrupt files, release source
   handles after import, and strip metadata on export. Use synthetic images in tests.
+- Treat project JSON as untrusted and bounded. Store only editor values and local
+  image references; preserve project state on missing sources. Keep recent paths
+  local-only and prompts explicit before discarding unsaved work.
 - Do not store pairing records or real device data.
 - Do not require administrator privileges; App uses an asInvoker manifest.
 - Do not execute downloaded third-party binaries or external device tools.
   Normal NuGet restore and the required .NET/xUnit validation toolchain are allowed.
-- Do not modify files outside C:\Dev\Cardryft. Keep tool state, NuGet caches,
+- Application recent-project state belongs in Windows LocalApplicationData under
+  Cardryft, never beside the executable. Tests must inject repository-local paths;
+  unavailable application data must remain nonfatal. Projects reference images
+  without copying/embedding them; document absolute fallback path disclosure.
+- Development actions must not modify files outside C:\Dev\Cardryft. Keep tool state, NuGet caches,
   and temporary files inside the ignored .local directory using the validation script.
 - Never put secrets, .env files, certificates, pairing records, device data,
   local backups, or diagnostic dumps into tracked files. Use the dedicated

@@ -402,6 +402,7 @@ FodyWeavers.xsd
 
 # Cardryft local tooling, sensitive data, and diagnostics
 .local/
+local-data/
 .env
 .env.*
 *.env
