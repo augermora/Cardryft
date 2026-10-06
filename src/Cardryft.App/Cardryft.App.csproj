@@ -8,6 +8,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Cardryft.Tests" />
     <ProjectReference Include="../Cardryft.Core/Cardryft.Core.csproj" />
     <ProjectReference Include="../Cardryft.Imaging/Cardryft.Imaging.csproj" />
     <ProjectReference Include="../Cardryft.Device/Cardryft.Device.csproj" />

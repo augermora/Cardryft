@@ -1,3 +1,5 @@
+using Cardryft.Imaging;
+
 namespace Cardryft.App;
 
 internal static class Program
@@ -6,6 +8,8 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm());
+        using var editor = new ArtworkEditor(new ImageLoader(), new ArtworkRenderer());
+        using var form = new MainForm(editor);
+        Application.Run(form);
     }
 }

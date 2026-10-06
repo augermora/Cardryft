@@ -5,8 +5,8 @@
 Cardryft is a privacy-first, open-source Windows x64 desktop application for
 creating and managing custom Apple Wallet card artwork. It uses C# / .NET 10,
 WinForms, xUnit, and the MIT license. Preserve LICENSE and existing repository
-files. Milestone 1 establishes the solution foundation; do not build the graphical
-card editor or integrations in this milestone.
+files. Milestone 2 adds an offline image artwork editor. Device and Apple Wallet
+integrations remain prohibited.
 
 ## Architecture
 
@@ -18,16 +18,21 @@ card editor or integrations in this milestone.
 - App owns WinForms and the composition root and may reference Core and the
   infrastructure libraries. Keep UI types out of Core.
 - Avoid circular dependencies, speculative service interfaces, and unnecessary
-  abstractions. Infrastructure implementations are deferred in Milestone 1.
-- Add packages only for a demonstrated need. Production currently needs none;
-  tests use the .NET test SDK, xUnit, and its Visual Studio adapter.
+  abstractions. Imaging owns raster loading/rendering/export; keep image processing
+  out of WinForms event handlers. Device, Wallet, and Storage remain deferred.
+- Keep artwork rasters rectangular; rounded masking/decorations belong only to
+  App's preview. Share transform/crop logic through Imaging. ArtworkSize.Canonical
+  is a provisional Cardryft editor/export size, not an Apple Wallet requirement.
+- Add packages only for a demonstrated need. Imaging uses System.Drawing.Common;
+  tests use the .NET test SDK, xUnit v3 (mtp-off), and its Visual Studio adapter.
 
 ## Coding conventions
 
 - Use file-scoped namespaces, four-space indentation, and normal C# naming:
   PascalCase for types/members and camelCase for parameters/local variables.
 - Keep nullable reference types and implicit usings enabled. Target x64;
-  libraries/tests use net10.0 and App uses net10.0-windows.
+  Core and inactive libraries use net10.0; App, Imaging, and raster tests use
+  net10.0-windows. Core must stay platform independent.
 - Prefer small, explicit types. Validate domain inputs at their entry point and
   test observable behavior with synthetic, non-sensitive examples.
 - Keep the WinForms startup path in App. Future services must be composed there,
@@ -35,11 +40,13 @@ card editor or integrations in this milestone.
 
 ## Security restrictions
 
-For Milestone 1:
+For Milestone 2:
 
 - Do not access Apple Wallet, connect to an iPhone, or implement private iOS protocols.
 - Do not request payment credentials or process card numbers, CVVs, PINs, or bank credentials.
 - Do not introduce telemetry or application network communication.
+- Keep image imports bounded, reject unsupported/corrupt files, release source
+  handles after import, and strip metadata on export. Use synthetic images in tests.
 - Do not store pairing records or real device data.
 - Do not require administrator privileges; App uses an asInvoker manifest.
 - Do not execute downloaded third-party binaries or external device tools.
