@@ -399,3 +399,35 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Cardryft local tooling, sensitive data, and diagnostics
+.local/
+.env
+.env.*
+*.env
+secrets/
+*.secrets.json
+appsettings.Local.json
+appsettings.*.local.json
+*.p12
+*.pem
+*.key
+*.cer
+*.crt
+*.der
+*.snk
+certificates/
+pairing-records/
+pairing_records/
+device-data/
+device_data/
+local-backups/
+backups/
+*.bak
+dumps/
+diagnostics/
+*.dmp
+*.mdmp
+*.dump
+*.nettrace
+*.etl
