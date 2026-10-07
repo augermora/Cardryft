@@ -654,3 +654,90 @@ Wallet and existing tests remain unchanged. Build/cache/test artifacts stay in
 ignored repository-local locations. All changes are uncommitted; Git history is
 unchanged. The dependency review confirms Core remains independent, Device references
 only Core, and no infrastructure-to-infrastructure or circular dependency was added.
+
+## Milestone 4C — artifact provenance stop (2026-10-07)
+
+The [native dependency manifest and build proposal](native-dependency-manifest.md)
+now records a measured six-DLL **candidate static PE closure**, exact package/source
+versions, DLL/archive/source/recipe SHA-256 values, full per-file imports and build
+toolchain provenance. It supersedes 4B's unresolved candidate filenames for that
+specific MSYS2 reference set, not for an approved future Cardryft build.
+
+The inspected upstream 1.4.0 release provides source assets. The current jrjr suite
+recipe still uses floating upstream sources and a broad artifact collection. Neither
+was adopted as a prebuilt runtime. Five specific MSYS2 UCRT64 binary archives and
+their corresponding source-only archives were acquired as inert repository-local
+evidence. Published binary archive hashes matched; all five source recipe hashes
+matched binary `.BUILDINFO`. Six explicitly named DLLs were extracted and statically
+inspected; existing .NET PEReader confirmed AMD64/PE32+ and no delay imports. No native
+module, executable, driver, installer or device tool was loaded or run.
+
+**The 4C stop condition applies: no exact full constrained runtime is approved.**
+The OpenSSL package enables dynamic zlib and engine support and relocates config/
+module directories. Its additional module/config contents and potential `ZLIB1`
+loads are not captured by ordinary PE imports. Signed/rebuilt provenance and
+compiled/static-runtime license reconciliation remain incomplete. The candidate
+mixes patched libimobiledevice 1.3.0 with later dependency builds; source/build
+traceability alone does not demonstrate that combination's ABI/behavior. Do not
+equate this finding with an allegation against MSYS2 or silently expand the allowlist.
+
+The preferred next artifact path is a single locked x64 UCRT64 toolchain and pinned
+upstream source build, with restrictive OpenSSL configuration, fatal offline library
+tests, two clean-build comparisons and recursive static/dynamic/compiled-code audit.
+The manifest provides full source commits/tarball hashes, build order/options,
+staging exclusions and acceptance gates. It is a proposal, not an executed or proven
+reproducible pipeline; toolchain archive pins and reviewed hardening patches remain
+required. libtatsu/curl are build prerequisites to investigate, not guessed runtime DLLs.
+
+The [third-party compliance plan](../../THIRD-PARTY-NOTICES.md) prepares native notice,
+license, corresponding-source and user-modification/relinking structure. It explicitly
+addresses LGPL/Apache version compatibility, embedded compiler code, GPL tools that
+are unnecessary at runtime, and the conflict between strict official hashes and
+compatible modified-library loading. It does not claim completed compliance or alter
+Cardryft's MIT LICENSE. Apple Devices/Apple Mobile Device Support remains separately
+installed official USB driver/service support, never extracted or redistributed.
+[Apple's recognition guidance](https://support.apple.com/en-ca/108643) and the
+[libusbmuxd Windows prerequisite description](https://github.com/libimobiledevice/libusbmuxd/blob/2.1.1/README.md#building)
+describe their roles; exact Apple service endpoint/access compatibility remains
+unverified here. No Apple installation/service/device inventory was performed.
+
+P/Invoke, actual constrained OS loading, native SafeHandles and native error/deadline
+implementation were **not added** under the stop condition. Source inspection found
+that a lockdown handshake helper can pair automatically; ordinary constructor and
+receive helpers also require review for implicit reads, frame allocation and total
+timeouts. The manifest records those gates. Managed cancellation/stale-result tests
+cannot establish native abortability or safe shutdown of blocked C calls.
+Required new native tests are recorded as future acceptance criteria rather than
+simulated assertions presented as proof of an unimplemented loader/ABI.
+
+All application/test code, project references/packages and existing tests remain
+unchanged. Refresh still returns an unavailable prerequisite status. No iPhone was
+connected or queried, no pairing material or device identifiers were inspected, and
+no Wallet/payment/content/write/network functionality was added. Hardware testing
+and iOS 27 validation are **not ready**. After the artifact/interop gates eventually
+pass, repeat automated validation and stop with owner instructions before hardware.
+
+Reviewable 4C changes: README.md, docs/architecture/overview.md,
+docs/security/threat-model.md, this research document, new
+docs/research/native-dependency-manifest.md and new THIRD-PARTY-NOTICES.md.
+Downloads, six candidate DLLs, source references and read-only PE audit script/output
+remain under ignored `.local/milestone4c-audit`; they are not application runtime
+assets, Git additions or distributable artifacts.
+
+### 4C validation
+
+Ran `.\scripts\validate.ps1` from `C:\Dev\Cardryft`. It executed the exact required
+commands `dotnet restore`, `dotnet build -c Release`, `dotnet test -c Release`,
+with development cache/AppData/temp paths isolated inside the repository.
+Restore/build/test completed successfully: **0 build warnings / 0 build errors**;
+**149 total / 149 passed / 0 failed / 0 skipped**. No tests were removed, weakened
+or retried, and no native loader/ABI test was claimed. The native acceptance matrix
+remains deferred because Phase 1 did not approve a complete runtime.
+
+`git diff --check` passed. Final code/project/LICENSE comparison confirms no changes
+to src, tests, scripts or dependency settings. New untracked reviewable files are
+only the manifest and compliance plan; all acquired artifact/audit state is ignored
+under `.local`. Core independence and existing reference direction are preserved.
+No packages, runtime binaries, production behavior or Git history changed. All six
+reviewable documentation files remain uncommitted. Controlled hardware validation
+is **not ready**; no phone was connected or queried.

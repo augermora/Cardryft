@@ -17,6 +17,16 @@ Milestone 4A is [Windows ↔ iPhone technical research](../research/windows-ios-
 only. Milestone 4B follows its [preflight fallback](../research/windows-ios-device-access.md#milestone-4b-phase-1--preflight-fallback-2026-10-07):
 managed boundaries exist, but native loading, communication and Wallet access remain disabled.
 
+Milestone 4C documents a [static candidate DLL audit and pinned build proposal](../research/native-dependency-manifest.md).
+It stops at provenance review: no production or project references changed. The six
+quarantined DLLs are audit data, not runtime assets. Full dynamic-load closure and
+licensing approval remain gates; PE imports alone omit OpenSSL's optional dynamic
+compression/engine/provider paths. No P/Invoke/SafeHandles/real native loader are
+implemented, and no hardware use is authorized by the audit. A later reviewed loader
+must verify the actual allowlist/hashes/x64 imports and confined dependency resolution
+at app-root/native/win-x64. Native absolute deadlines, receive allocation limits and
+safe shutdown still require review; UI cancellation cannot terminate C calls.
+
 ## Device preflight and read-only boundary
 
 Core owns IDeviceDiscovery, immutable DeviceInfo/result snapshots and typed status,

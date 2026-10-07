@@ -46,13 +46,33 @@ USBMUXD_SOCKET_ADDRESS override. It reads no PATH or current-directory candidate
 changes no environment variables, and always fails closed pending native review.
 Apple Devices or compatible Apple USB support must be separately installed by the
 user for a future working backend; Cardryft will not install or redistribute it.
-No new packages or native binaries were added; the MIT LICENSE is unchanged.
+Milestone 4B added no packages or native binaries; the MIT LICENSE is unchanged.
 
 Before hardware testing, supply/build a provenance-verified x64 native set, audit
 its recursive PE imports, exact versions/hashes/licenses, implement and review the
 narrow C ABI and existing-trust path, then repeat automated validation. Only after
 explicit instructions should the owner physically connect an iPhone. Current code
 cannot perform that validation. See the [4B audit and manual gates](docs/research/windows-ios-device-access.md#milestone-4b-phase-1--preflight-fallback-2026-10-07).
+
+## Milestone 4C: native artifact audit (stopped before interop)
+
+The [native dependency evidence and pinned build proposal](docs/research/native-dependency-manifest.md)
+records six exact candidate DLL names, versions, SHA-256 values, recursive static PE
+imports and corresponding-source recipe hashes. Five project-owned MSYS2 archives
+were inspected only as inert data in ignored `.local/milestone4c-audit`; six DLLs
+were extracted there, never loaded/executed or copied into the application.
+
+**No runtime dependency set is approved.** The candidate OpenSSL recipe supports
+dynamic compression/engine/provider loading outside its static imports; signed/rebuilt
+provenance and the complete compiled-source/license inventory remain incomplete.
+Following the 4C stop condition, no loader/P/Invoke, production behavior or packages
+were changed. Device Refresh still fails closed. The build proposal pins upstream
+sources and requires a single verified toolchain, restrictive TLS configuration,
+reproducibility checks, bounded native calls and a [compliance plan](THIRD-PARTY-NOTICES.md).
+
+Hardware validation is not ready. Do not connect or query an iPhone for this milestone.
+Apple drivers/USB support remain a separately installed official prerequisite;
+Cardryft bundles no Apple DLLs and performs no pairing or Wallet integration.
 
 ## Project format and sources
 

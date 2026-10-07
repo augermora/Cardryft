@@ -1,4 +1,4 @@
-# Threat model: Milestones 3–4B preflight
+# Threat model: Milestones 3–4C preflight and artifact audit
 
 ## Scope and assets
 
@@ -10,6 +10,11 @@ The provisional 1024 × 640 size is Cardryft's convention, not an Apple Wallet r
 Milestone 4B adds an inactive native preflight, fake-testable USB discovery and a UI
 status section. The default backend cannot load libraries or communicate with devices.
 Real-device validation is blocked on the exact native closure and audited interop.
+Milestone 4C acquired project-owned MSYS2 archives as development audit data only,
+checking published archive hashes and inspecting six extracted PE files without
+loading/executing them. All data/tools/output stay under ignored repository-local
+`.local/milestone4c-audit`. This development research is not application networking
+or deployment. No production behavior/package/native execution boundary changed.
 
 Assets include artwork, paths, project edits, local files, privacy, and repository
 integrity. Source/project/recent paths and artwork may disclose personal information;
@@ -80,8 +85,9 @@ redact sensitive pixels; users must not supply payment credentials or card data.
   interop, audit transitive calls, allocation bounds, finite native timeouts and
   calling conventions; managed cancellation cannot abort blocked C calls.
 - DLL hashes, signatures, recursive import closure, source/replacement obligations,
-  dependency search restrictions and TOCTOU/loading risks remain a future gate. No
-  native binaries/checksums are introduced now. Apple USB software remains separately
+  dependency search restrictions and TOCTOU/loading risks remain a future gate.
+  Candidate binaries/checksums now exist only as inert development audit evidence;
+  no runtime binary is shipped or approved. Apple USB software remains separately
   installed; no proprietary Apple binary redistribution or elevation is authorized.
 - Hardware use requires successful automated validation, explicit instructions and
   the owner physically connecting the test iPhone. The owner alone accepts trust through
@@ -91,6 +97,30 @@ redact sensitive pixels; users must not supply payment credentials or card data.
 An approved local usbmux IPC path would require a later reviewed backend; no sockets
 are opened by this preflight. iOS 27 and driver/standard-user behavior are unverified.
 The editor's existing boundaries and restrictions below remain in force.
+
+### 4C provenance and runtime gates
+
+The [native evidence manifest](../research/native-dependency-manifest.md) records
+actual candidate hashes/imports, matching source recipes and incomplete approval.
+Only named regular data entries were extracted using the existing Windows archive
+tool. No downloaded installer/tool/native code was executed, no unpinned suite was
+adopted and no proprietary Apple component/pairing directory/device was inspected.
+Package hashes do not prove source-to-binary equivalence or exclude malicious code;
+signature and independent rebuild verification remain incomplete.
+
+The OpenSSL candidate enables dynamic zlib/engine support, relocates config/provider
+directories and includes optional modules outside the six-file static PE closure.
+Neither PE import parsing nor an absolute LoadLibrary path confines those loads.
+Future builds must remove or explicitly validate them and prevent external config,
+environment-driven modules, PATH/CWD/TEMP/Downloads, network and reparse/path escapes.
+Hash pins require both protection against file-replacement races and a tested LGPL
+source/rebuild/replacement route; see the [compliance plan](../../THIRD-PARTY-NOTICES.md).
+
+Native receive code's initial timeout is not a total-operation bound: later receives
+and advertised frame allocation need limits before an in-process backend can be
+enabled. Do not abandon blocked native work or free modules/handles while it runs.
+Actual ABI/SafeHandle/error-code/deadline tests remain deferred under the explicit
+stop condition. No hardware validation or Wallet access takes place in 4C.
 
 Keep Windows/.NET patched; native codec vulnerabilities are not eliminated by
 format/resource checks. Initial decoding can hold multiple bounded pixel buffers;
