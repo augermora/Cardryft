@@ -21,6 +21,7 @@
     <Using Include="Xunit" />
     <ProjectReference Include="../../src/Cardryft.App/Cardryft.App.csproj" />
     <ProjectReference Include="../../src/Cardryft.Core/Cardryft.Core.csproj" />
+    <ProjectReference Include="../../src/Cardryft.Device/Cardryft.Device.csproj" />
     <ProjectReference Include="../../src/Cardryft.Imaging/Cardryft.Imaging.csproj" />
     <ProjectReference Include="../../src/Cardryft.Storage/Cardryft.Storage.csproj" />
   </ItemGroup>

@@ -25,6 +25,35 @@ size (1.6:1). It offers a crisp landscape preview at modest memory cost. This is
 Cardryft's convention, not an Apple Wallet-required size, and can be replaced
 following future device/Wallet research. This UI uses the canonical size.
 
+## Milestone 4B: device preflight (hardware blocked)
+
+The sidebar now has a small USB-only Device section and an explicit Refresh button.
+**Real iPhone detection and metadata queries are not enabled.** No reviewed x64
+libimobiledevice DLL closure is available in the repository, so the request's
+fallback is implemented: testable discovery/loader boundaries with a non-crashing
+native-dependency-unavailable state. Adding arbitrary DLLs cannot enable this backend.
+No libraries are loaded, device tools executed, phone connected, or pairing performed.
+
+Fake-backed tests cover empty/multiple/duplicate/disconnected devices, trust and
+restricted states, exactly DeviceName/ProductType/ProductVersion/BuildVersion,
+connection disposal, cancellation and stale refreshes. These are not hardware or
+iOS 27 compatibility results. Device identifiers are internal and transient;
+artwork projects/recent lists never receive device state or metadata.
+
+Preflight considers only `<application directory>\native\win-x64`; it rejects
+non-x64, relative/UNC/device-namespace/network/reparse paths and any
+USBMUXD_SOCKET_ADDRESS override. It reads no PATH or current-directory candidates,
+changes no environment variables, and always fails closed pending native review.
+Apple Devices or compatible Apple USB support must be separately installed by the
+user for a future working backend; Cardryft will not install or redistribute it.
+No new packages or native binaries were added; the MIT LICENSE is unchanged.
+
+Before hardware testing, supply/build a provenance-verified x64 native set, audit
+its recursive PE imports, exact versions/hashes/licenses, implement and review the
+narrow C ABI and existing-trust path, then repeat automated validation. Only after
+explicit instructions should the owner physically connect an iPhone. Current code
+cannot perform that validation. See the [4B audit and manual gates](docs/research/windows-ios-device-access.md#milestone-4b-phase-1--preflight-fallback-2026-10-07).
+
 ## Project format and sources
 
 `.cardryft` files are readable JSON, format **version 1**:
@@ -121,8 +150,9 @@ dotnet run --project src/Cardryft.App -c Release --no-restore
 ```
 
 Core owns validated value state/history, Imaging owns raster operations, Storage
-owns project/recent JSON, and App owns WinForms and orchestration. Device and Wallet
-remain empty boundaries. No new packages were required for Milestone 3; Imaging
+owns project/recent JSON, and App owns WinForms and orchestration. Device owns the
+inactive native preflight and fake-testable USB boundary; Wallet remains empty.
+No new packages were required for Milestones 3–4B; Imaging
 uses System.Drawing.Common 10.0.12 and tests use xUnit v3.
 
 See [architecture](docs/architecture/overview.md), [threat model](docs/security/threat-model.md),

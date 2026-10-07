@@ -8,13 +8,44 @@ The asInvoker application uses the installed Windows Desktop runtime.
 
 App references Core, Imaging, Storage, Device, and Wallet. Imaging and Storage
 reference only Core. Core uses no UI/platform APIs and performs no I/O. Device
-and Wallet remain empty project boundaries. Tests reference Core, Imaging,
-Storage, and App; App exposes internals only to its test assembly. All namespaces
+references only Core; its 4B native backend remains disabled. Wallet remains empty.
+Tests reference Core, Device, Imaging, Storage, and App; App and Device expose
+internals only to the test assembly. All namespaces
 start with Cardryft. No circular or infrastructure-to-infrastructure dependencies.
 
 Milestone 4A is [Windows ↔ iPhone technical research](../research/windows-ios-device-access.md)
-only. It proposes a narrowly scoped read-only device backend for later review;
-no device code, native dependencies, communication, or Wallet access is enabled.
+only. Milestone 4B follows its [preflight fallback](../research/windows-ios-device-access.md#milestone-4b-phase-1--preflight-fallback-2026-10-07):
+managed boundaries exist, but native loading, communication and Wallet access remain disabled.
+
+## Device preflight and read-only boundary
+
+Core owns IDeviceDiscovery, immutable DeviceInfo/result snapshots and typed status,
+trust and diagnostic values, with no platform API or I/O dependency. Public device
+snapshots expose only four bounded optional metadata fields and no backend identifier.
+Device owns the internal USB backend/owned metadata-connection interfaces, defensive
+USB filtering/deduplication, normalized errors, and serial discovery orchestration.
+There is no public IDeviceConnection or generic service/key/write/pairing interface.
+
+NativeLibraryLoader is **preflight only**. It checks x64, rejects endpoint overrides,
+network paths and reparse ancestors, and considers only an explicitly composed app
+root's native/win-x64 directory. No DLL is loaded even if the directory exists:
+MissingNativeBundle/UnreviewedNativeBundle are terminal until a reviewed runtime and
+C ABI exist. No DllImport, unsafe pointer, native SafeHandle, socket or device call is
+implemented. Consequently actual native handle disposal/ABI/timeout testing is deferred;
+fake connection ownership is exercised with deterministic disposal on all paths.
+
+LibimobileDeviceDiscovery always uses that unavailable backend in production. Its
+internal test seam supplies USB snapshots and confirmed existing trust; it never
+infers trust from metadata and queries only the four approved typed fields after
+trusted/accessible status. Identifiers and deduplication state live only inside a
+single refresh. Bounds are 32 candidates, 128 identifier characters, and 256 characters
+per displayed value. Managed text checks do not replace future native allocation limits.
+
+App composes discovery and owns DeviceRefreshController/DevicePanel. An explicit
+Refresh serializes/coalesces work, cancels superseded requests, suppresses stale
+results/errors, and awaits stop during window closure. No automatic polling or device
+query occurs on startup. Device state never enters Storage, Imaging, project history
+or recent lists. The editor remains usable when prerequisites are unavailable.
 
 ## State and history
 
@@ -118,7 +149,9 @@ No Milestone 3 packages were added. Imaging uses System.Drawing.Common 10.0.12
 use net10.0-windows; Core/Storage/inactive projects remain net10.0. Tests exercise
 round-trip/version/malformed storage, missing source, history/dirty state, recent
 trimming, drop validation, controlled stale/canceled renders, and existing pixel/export
-behavior. No device/Wallet or networking implementation exists.
+behavior. Device tests use fakes only; no runtime device/Wallet communication or
+networking implementation exists. Native dependencies/versions and iOS 27 support
+remain unvalidated; see the research document's 4B gates.
 
 Native decoding is not sandboxed. Large sources can consume substantial bounded
 memory; initial decoding temporarily holds old/new/native pixel buffers. Export/save

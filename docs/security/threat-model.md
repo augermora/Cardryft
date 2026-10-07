@@ -1,4 +1,4 @@
-# Threat model: Milestone 3
+# Threat model: Milestones 3–4B preflight
 
 ## Scope and assets
 
@@ -7,6 +7,9 @@ Cardryft imports local PNG/JPEG into memory, previews transforms, saves/opens lo
 Apple Wallet, payment, network, telemetry, cloud client, privileged access, or external
 process execution exists. Development validation uses the allowed .NET/NuGet toolchain.
 The provisional 1024 × 640 size is Cardryft's convention, not an Apple Wallet requirement.
+Milestone 4B adds an inactive native preflight, fake-testable USB discovery and a UI
+status section. The default backend cannot load libraries or communicate with devices.
+Real-device validation is blocked on the exact native closure and audited interop.
 
 Assets include artwork, paths, project edits, local files, privacy, and repository
 integrity. Source/project/recent paths and artwork may disclose personal information;
@@ -53,6 +56,41 @@ redact sensitive pixels; users must not supply payment credentials or card data.
   clients or telemetry packages. NuGet restore is development-only, not app networking.
 
 ## Remaining risks and restrictions
+
+### Device boundary (currently inactive)
+
+- Only explicit Refresh checks prerequisites. NativeLibraryLoader does not call an
+  OS loader, search PATH/CWD, connect to usbmux or inspect Apple pairing directories.
+  Its app-root/native/win-x64 location is centralized inside Device. Non-x64, UNC,
+  device-namespace, mapped network and reparse paths and endpoint overrides fail closed.
+  Directory/file presence is not provenance; no unreviewed bundle can enable the backend.
+- Fake discovery rejects network/unknown transports and duplicate candidates, limits
+  counts/identifier lengths and queries exactly DeviceName, ProductType, ProductVersion
+  and BuildVersion only with confirmed existing trust and accessible status. Neither
+  a successful metadata value nor USB presence proves trust. Unavailable fields stay
+  unavailable; restricted/unknown states are not treated as trust permission.
+- No pairing, record creation/deletion/repair, generic lockdown dictionary, StartService,
+  Wallet, payment, media, contacts, messages, filesystem, app enumeration or write API
+  exists in the boundary. No network clients, Wi-Fi fallback, external helper or telemetry.
+- Public snapshots exclude identifiers; metadata is UI-only and transient. Generic
+  error/ToString results exclude names/IDs/raw responses. No device state is sent to
+  Storage, recent JSON, artwork projects, exports or logs. All tests use synthetic data.
+- Serial/coalesced refresh and awaited shutdown protect fake connection lifetimes;
+  IDisposable tests do not prove native SafeHandle or ABI correctness. Before real
+  interop, audit transitive calls, allocation bounds, finite native timeouts and
+  calling conventions; managed cancellation cannot abort blocked C calls.
+- DLL hashes, signatures, recursive import closure, source/replacement obligations,
+  dependency search restrictions and TOCTOU/loading risks remain a future gate. No
+  native binaries/checksums are introduced now. Apple USB software remains separately
+  installed; no proprietary Apple binary redistribution or elevation is authorized.
+- Hardware use requires successful automated validation, explicit instructions and
+  the owner physically connecting the test iPhone. The owner alone accepts trust through
+  official UI if needed. Never reset existing trust merely to test untrusted behavior.
+  Cardryft never initiates Pair or claims forensic proof of zero vendor/OS side effects.
+
+An approved local usbmux IPC path would require a later reviewed backend; no sockets
+are opened by this preflight. iOS 27 and driver/standard-user behavior are unverified.
+The editor's existing boundaries and restrictions below remain in force.
 
 Keep Windows/.NET patched; native codec vulnerabilities are not eliminated by
 format/resource checks. Initial decoding can hold multiple bounded pixel buffers;

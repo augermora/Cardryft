@@ -5,6 +5,7 @@ namespace Cardryft.App;
 internal sealed class MainForm : Form
 {
     private readonly ArtworkEditor editor;
+    private readonly DevicePanel devices;
     private readonly ArtworkPreview preview = new() { Dock = DockStyle.Fill };
     private readonly TrackBar zoom = CreateSlider("Zoom", 100, 400, 100);
     private readonly TrackBar horizontal = CreateSlider("Horizontal position", -100, 100, 0);
@@ -27,9 +28,10 @@ internal sealed class MainForm : Form
     private readonly ToolStripMenuItem redoItem = new("Redo");
     private readonly Button import = CreateButton("Import Image");
 
-    public MainForm(ArtworkEditor editor)
+    public MainForm(ArtworkEditor editor, IDeviceDiscovery discovery)
     {
         this.editor = editor;
+        devices = new DevicePanel(discovery);
         Text = "Cardryft";
         ClientSize = new Size(1000, 680);
         MinimumSize = new Size(760, 520);
@@ -69,6 +71,7 @@ internal sealed class MainForm : Form
         hint.ForeColor = Color.DimGray;
         hint.Margin = new Padding(0, 18, 0, 0);
         controls.Controls.Add(hint);
+        controls.Controls.Add(devices);
         workspace.Controls.Add(controls, 1, 0);
         layout.Controls.Add(workspace, 0, 2);
         status.Dock = DockStyle.Fill;
@@ -196,7 +199,7 @@ internal sealed class MainForm : Form
         if (!ConfirmLeave()) return;
         shuttingDown = true;
         Enabled = false;
-        try { await editor.ShutdownAsync(); }
+        try { await devices.StopAsync(); await editor.ShutdownAsync(); }
         catch (Exception exception) when (ArtworkEditor.IsFileError(exception)) { }
         editor.Changed -= SynchronizeControls;
         editor.RenderFailed -= ShowFailure;

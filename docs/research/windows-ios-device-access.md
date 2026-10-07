@@ -480,3 +480,177 @@ No further nondeterminism was observed in these runs. The upstream cache defect
 still exists outside the test assembly; the fix establishes safe test initialization,
 not a patched runtime or a production-behavior change. Hardware compatibility remains
 unvalidated and no device work was performed.
+
+## Milestone 4B Phase 1 — preflight fallback (2026-10-07)
+
+### Outcome and native audit boundary
+
+**Hardware spike not ready.** The repository (including ignored local artifacts)
+contains no reviewed libimobiledevice/libusbmuxd/libplist DLL set. A GCC executable
+was located but not executed; this does not establish a complete, provenance-reviewed
+x64 build environment. No native binary was acquired, executed, introduced or hashed.
+The user explicitly permits stopping at a testable loader/interop abstraction when
+safe native binaries are unavailable. That fallback is implemented; production
+P/Invoke, native loading and hardware access remain disabled.
+
+Source inspection establishes logical dependencies, not a PE runtime closure.
+Exact DLL names, artifact versions, hashes, imports and transitive licenses are
+**unresolved**, and must not be replaced with guessed names or configuration minimums.
+The table below records build targets and evidence only; none is an installed or
+approved Cardryft dependency.
+
+| Logical library / build target stem | Source/version evidence | License evidence | Relationship and purpose | Exact runtime DLL/version |
+| --- | --- | --- | --- | --- |
+| libimobiledevice-1.0 | Upstream 1.4.0 examined; no artifact selected | LGPL-2.1-or-later in inspected C source | Top-level candidate for USB target management and narrow lockdown requests | Unresolved |
+| libusbmuxd-2.0 | 1.4.0 configure minimum 2.0.2; not a version pin | LGPL-2.1 client; CLI tools have separate GPL licenses | Direct native dependency of libimobiledevice; IPC to separately installed Apple USB service | Unresolved |
+| libplist-2.0 | Configure minimum 2.3.0; not selected | LGPL-2.1 README; audit exact files/variant | Direct native dependency and plist conversion; also used transitively | Unresolved |
+| libimobiledevice-glue-1.0 | Configure minimum 1.3.0; not selected | LGPL-2.1 README; audit exact files/variant | Direct native dependency; shared transport/utilities, also transitive | Unresolved |
+| TLS/crypto provider | Build supports multiple providers; none selected | Depends on exact provider/version/options | Direct root-library linkage and transitive crypto/runtime imports | Unresolved |
+| libtatsu-1.0 | Configure minimum 1.0.3 | LGPL-2.1 README | Mandatory build check; not named in core-library link recipe. Do not infer TSS/curl runtime shipping | Unresolved; inclusion not established |
+| Compiler/compression/system imports | Toolchain/options not selected | Per exact artifact; Windows system libraries remain system prerequisites | Actual PE import closure must decide, including TLS provider dependencies | Unresolved |
+| Apple USB driver/service | Official Apple Devices or separately tested compatible Apple support | Proprietary, separately installed | Windows host transport prerequisite; never extracted/redistributed by Cardryft | Installed system prerequisite, not bundled DLLs |
+
+These source observations come from the pinned [link recipe](https://github.com/libimobiledevice/libimobiledevice/blob/1.4.0/src/Makefile.am)
+and [configure checks](https://github.com/libimobiledevice/libimobiledevice/blob/1.4.0/configure.ac).
+The examined third-party [Windows build recipe](https://github.com/jrjr/libimobiledevice-windows/blob/main/.github/workflows/build.yml)
+clones floating repositories and gathers tools/dependencies broadly; it was not
+adopted as a reviewed closure. A recent artifact or MIT builder license alone is
+insufficient provenance/license evidence. The earlier LGPL/GPL analysis still applies.
+No application packages, native dependencies or LICENSE changes were introduced.
+
+### Implemented architecture and loading policy
+
+- Core: IDeviceDiscovery and immutable read-only device/result/status/trust values.
+  No UI, infrastructure, platform API or identifier property is added to Core.
+- Device: internal managed native-backend/metadata-connection interfaces, USB-only
+  defensive filtering, per-refresh deduplication, normalized generic errors, bounded
+  metadata and deterministic connection disposal. Production uses an unavailable
+  backend; fake data is supplied only by the friend test assembly.
+- NativeLibraryLoader: preflight at `<AppContext.BaseDirectory>/native/win-x64` only.
+  Reject non-x64, relative/UNC/device-namespace paths, mapped network drives, alternate
+  stream syntax, reparse ancestors and any USBMUXD_SOCKET_ADDRESS override. No process
+  environment changes, PATH/CWD search, automatic downloads or fallback. Directory
+  presence always returns UnreviewedNativeBundle; absence returns MissingNativeBundle.
+  **No DLL loads occur.** A reviewed manifest/recursive import/ABI implementation is
+  required later; simply copying DLLs cannot turn the preflight into a working backend.
+- App: a minimal Device/Refresh sidebar section and serial, coalesced, cancelable
+  refresh orchestration. Suppress stale results/errors and await shutdown. No polling,
+  initial hardware query, raw responses or identifiers appear in UI/logging/persistence.
+  The artwork editor remains usable when dependencies are unavailable.
+
+No NativeMethods, native SafeHandles or unmanaged pointers were fabricated before
+Phase 1 validation. Fake IDisposable connection tests are ownership tests, not native
+ABI/free-function validation. The internal interface intentionally exposes no Pair,
+Unpair, trust repair, generic key/domain, StartService or write operation.
+
+### Trust, privacy and current limitations
+
+The **4B allowlist supersedes the earlier 4A proposal**: DeviceName, ProductType,
+ProductVersion and BuildVersion only, with confirmed existing trust/access. Missing
+optional fields remain null. Successful values never infer trust. The non-handshaking
+C constructor's implicit DeviceClass/ProductVersion queries are a future call-graph
+review gate; do not silently inherit HardwareModel or whole-domain queries from 4A.
+Device-class/iPhone identification, session reuse, field availability, locked-state
+distinction and native numeric error mapping have not been hardware-validated.
+
+Identifiers are internal inputs for targeting/deduplication during one refresh, not
+public DTO fields, persisted hashes or tracking records. Core snapshots and their
+generic diagnostic strings exclude identifiers. Metadata stays in UI memory and
+never enters projects/recent lists, artwork, history or logs. No pairing material,
+serial/IMEI/ECID, Wallet/payment/content/app/filesystem access or device writes occur.
+Bounds in the managed seam are 32 candidates, 128 identifier characters and 256
+characters per displayed field. A future backend must bound native frames/plists/
+UTF-8 allocations before conversion; these fake-backed limits do not make C safe.
+
+Windows Apple-service endpoint/driver state and standard-user access remain untested.
+Current fake iOS values are synthetic; **iOS 27 compatibility is not established**.
+No device is connected or inspected. Native timeouts and SafeHandle/module lifetimes
+remain unimplemented and unvalidated. Do not advertise the hardware milestone complete.
+
+### Exact next steps and manual stop point
+
+1. Before connecting a phone for Cardryft testing, produce a narrowly scoped x64
+   upstream/reproducible build or provenance-verified reputable artifact set. Record
+   source commits, recipes/flags, every actual DLL name/version/SHA-256, recursive PE
+   imports/architecture/exports, license copies and corresponding source obligations.
+   Exclude CLI tools, unnecessary GPL components, proprietary Apple binaries and any
+   unexplained dependency. Review TLS/compiler/vendor license combinations.
+2. Implement/review the real loader and narrow C ABI only after that closure passes.
+   Use explicit calling conventions/marshaling/owned native frees/SafeHandles, approved
+   absolute paths and constrained dependency resolution; audit static initialization,
+   USB-only targeting, paired-session transitive behavior and finite native timeouts.
+   Bind no automatic-handshake/Pair/Unpair/write/service/content/Wallet function.
+3. Repeat restore/Release build/full fake tests. Provide explicit instructions and
+   stop before hardware use. Only then does the owner physically connect an owned
+   test iPhone and confirm Windows/official Apple Devices recognizes it. Cardryft
+   must remain a standard user and must not install/repair drivers or restart services.
+4. Record nonsensitive exact Windows/Apple-software/iOS version information manually.
+   Try Refresh. Test an untrusted state only if already available without resetting
+   existing trust. If trust is needed, the owner alone uses official Trust This Computer
+   UI; Cardryft never initiates pairing, presses Trust or repairs records.
+5. With existing trusted access, query only the four approved fields. Observe generic
+   status for locked/restricted/unavailable fields. Do not use generic CLI dumps to
+   obtain missing values or inspect other phone contents.
+6. Physically disconnect/reconnect and repeat several explicit refreshes; include two
+   devices if available, verify correct targeting/duplicate handling and stale-result
+   suppression. Record generic counts/statuses rather than names/identifiers.
+7. Review source/request traces and process-local writes/networking to confirm the
+   allowlist, no Pair/save-record/content/write calls and no persisted identifiers or
+   metadata. Distinguish Apple vendor processes and OS diagnostics; do not claim
+   forensic proof that the host/device produced no incidental side effects.
+8. Stop at read-only validation. Do not start Wallet integration, Wi-Fi, content access,
+   app installation, device writes or an expansion of the metadata allowlist.
+
+The current build is **not ready for step 3's hardware stage**. The native closure,
+production loader/C ABI, existing-trust call graph and native timeout/resource bounds
+are blockers. All implemented tests use synthetic fakes and never require an iPhone.
+
+### 4B fallback validation and changed files
+
+Ran `.\scripts\validate.ps1` from `C:\Dev\Cardryft`, which executed:
+
+```powershell
+dotnet restore
+dotnet build -c Release
+dotnet test -c Release
+```
+
+The final run completed successfully: **0 build warnings / 0 build errors**;
+**149 total / 149 passed / 0 failed / 0 skipped**. All 108 existing cases remain;
+41 new cases exercise the managed device boundary, path preflight and refresh state.
+The first completed build identified xUnit cancellation-token analyzer warnings in
+the new tests; these were corrected, and subsequent complete validation runs had
+zero warnings. Earlier sandboxed attempts stopped at restore with exit code 1 and
+no diagnostic output; the authorized validation script completed using the same
+repository-local cache/AppData/temp settings. No test retries, parallelism changes,
+native execution or hardware validation were used.
+
+Reviewable files created:
+
+- `src/Cardryft.Core/DeviceDiscovery.cs`
+- `src/Cardryft.Device/Apple/LibimobileDevice/NativeBackend.cs`
+- `src/Cardryft.Device/Apple/LibimobileDevice/NativeLibraryLoader.cs`
+- `src/Cardryft.Device/Apple/LibimobileDevice/LibimobileDeviceDiscovery.cs`
+- `src/Cardryft.App/DeviceRefreshController.cs`
+- `src/Cardryft.App/DevicePanel.cs`
+- `tests/Cardryft.Tests/DeviceDiscoveryTests.cs`
+- `tests/Cardryft.Tests/NativeLibraryLoaderTests.cs`
+- `tests/Cardryft.Tests/DeviceRefreshTests.cs`
+
+Reviewable files modified:
+
+- `src/Cardryft.Device/Cardryft.Device.csproj` (friend test assembly only)
+- `tests/Cardryft.Tests/Cardryft.Tests.csproj` (Device project reference only)
+- `src/Cardryft.App/Program.cs`
+- `src/Cardryft.App/MainForm.cs`
+- `README.md`
+- `AGENTS.md`
+- `docs/architecture/overview.md`
+- `docs/security/threat-model.md`
+- `docs/research/windows-ios-device-access.md`
+
+No package references or native binaries were added. LICENSE, Storage, Imaging,
+Wallet and existing tests remain unchanged. Build/cache/test artifacts stay in
+ignored repository-local locations. All changes are uncommitted; Git history is
+unchanged. The dependency review confirms Core remains independent, Device references
+only Core, and no infrastructure-to-infrastructure or circular dependency was added.

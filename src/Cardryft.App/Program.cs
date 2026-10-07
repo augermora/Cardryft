@@ -1,5 +1,6 @@
 using Cardryft.Imaging;
 using Cardryft.Storage;
+using Cardryft.Device.Apple.LibimobileDevice;
 
 namespace Cardryft.App;
 
@@ -11,7 +12,7 @@ internal static class Program
         ApplicationConfiguration.Initialize();
         using var editor = new ArtworkEditor(new ImageLoader(), new ArtworkRenderer(),
             new ProjectStore(), new RecentProjects());
-        using var form = new MainForm(editor);
+        using var form = new MainForm(editor, new LibimobileDeviceDiscovery());
         Application.Run(form);
     }
 }

@@ -5,8 +5,10 @@
 Cardryft is a privacy-first, open-source Windows x64 desktop application for
 creating and managing custom Apple Wallet card artwork. It uses C# / .NET 10,
 WinForms, xUnit, and the MIT license. Preserve LICENSE and existing repository
-files. Milestone 3 adds offline project persistence, history, and async preview. Device and Apple Wallet
-integrations remain prohibited.
+files. Milestone 3 adds offline project persistence, history, and async preview.
+Milestone 4B currently implements only an inactive native preflight and fake-testable
+read-only USB boundary. Real communication is blocked until native/interop review;
+Apple Wallet integration remains prohibited.
 
 ## Architecture
 
@@ -22,7 +24,7 @@ integrations remain prohibited.
   out of WinForms event handlers. Storage owns versioned project/recent JSON.
   Centralize per-user LocalApplicationData paths and project-relative source
   normalization/resolution in Storage. Keep absolute version 1 references readable.
-  Device and Wallet remain deferred. Keep history value-only and bounded; serialize
+  Device owns its internal native preflight/backend; Wallet remains deferred. Keep history value-only and bounded; serialize
   preview work, suppress stale results, and await workers before disposing image data.
 - Keep artwork rasters rectangular; rounded masking/decorations belong only to
   App's preview. Share transform/crop logic through Imaging. ArtworkSize.Canonical
@@ -44,9 +46,17 @@ integrations remain prohibited.
 
 ## Security restrictions
 
-For Milestone 3:
+For the current Milestone 4B preflight:
 
-- Do not access Apple Wallet, connect to an iPhone, or implement private iOS protocols.
+- Do not access Apple Wallet. No real device call or native DLL loading is enabled.
+  If no safe exact x64 native closure exists, stop at tested abstractions and report
+  the blocker. Never adopt an opaque tool distribution or redistribute Apple binaries.
+  A later reviewed backend may query only DeviceName, ProductType, ProductVersion
+  and BuildVersion over USB with existing confirmed trust. No Pair/Unpair, record
+  changes, generic dictionaries, StartService, file/app/content access or device writes.
+  After automated validation, provide explicit instructions and wait for the owner
+  to physically connect a phone before any hardware use. Never automate acceptance
+  of Trust This Computer or reset existing trust. Keep identifiers transient/internal.
 - Do not request payment credentials or process card numbers, CVVs, PINs, or bank credentials.
 - Do not introduce telemetry or application network communication.
 - Keep image imports bounded, reject unsupported/corrupt files, release source
