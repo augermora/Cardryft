@@ -1,0 +1,22 @@
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -25,7 +25,7 @@ libimobiledevice_glue_1_0_la_SOURCES =	\
+ 
+ if WIN32
+ libimobiledevice_glue_1_0_la_LDFLAGS += -avoid-version -static-libgcc
+-libimobiledevice_glue_1_0_la_LIBADD += -lws2_32 -lIphlpapi
++libimobiledevice_glue_1_0_la_LIBADD += -lws2_32 -liphlpapi
+ endif
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -90,7 +90,7 @@ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+ @WIN32_TRUE@am__append_1 = -avoid-version -static-libgcc
+-@WIN32_TRUE@am__append_2 = -lws2_32 -lIphlpapi
++@WIN32_TRUE@am__append_2 = -lws2_32 -liphlpapi
+ subdir = src
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/as-compiler-flag.m4 \

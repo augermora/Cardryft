@@ -1,0 +1,9 @@
+idevice_get_device_list_extended
+idevice_device_list_extended_free
+idevice_new_with_options
+idevice_free
+lockdownd_client_new
+lockdownd_client_free
+lockdownd_get_value
+lockdownd_start_session
+lockdownd_stop_session

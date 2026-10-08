@@ -68,6 +68,11 @@ For the current Milestone 4B preflight:
 - Do not require administrator privileges; App uses an asInvoker manifest.
 - Do not execute downloaded third-party binaries or external device tools.
   Normal NuGet restore and the required .NET/xUnit validation toolchain are allowed.
+  Milestone 4D additionally authorizes the exact hash-locked repository-local native
+  compiler/build/inspection toolchain in native-build, with caches/state under .local.
+  This exception does not authorize loading the device runtime, device utilities,
+  USB enumeration, usbmux/lockdown calls, pairing, or hardware use. Build artifacts
+  remain staged until reproducibility, dependency, licensing and interop gates pass.
 - Application recent-project state belongs in Windows LocalApplicationData under
   Cardryft, never beside the executable. Tests must inject repository-local paths;
   unavailable application data must remain nonfatal. Projects reference images

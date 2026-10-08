@@ -402,6 +402,10 @@ FodyWeavers.xsd
 
 # Cardryft local tooling, sensitive data, and diagnostics
 .local/
+# Native build results require audit before any runtime promotion.
+/native/win-x64/*.dll
+/native/win-x64/*.exe
+/native/win-x64/*.pdb
 local-data/
 .env
 .env.*

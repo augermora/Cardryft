@@ -1,6 +1,6 @@
-# Third-party native dependency compliance plan
+# Third-party native dependency notices and compliance ledger
 
-**Milestone 4C planning document. No native runtime is shipped or approved.**
+**Milestones 4C–4D: native audit/build material, not an approved runtime release.**
 Cardryft's own source remains MIT under LICENSE. This document does not relicense
 third-party code or assert completed distribution compliance. Existing managed
 NuGet dependencies are unchanged; their package licenses remain applicable.
@@ -10,6 +10,74 @@ candidate binary/package/source hashes, revisions, import relationships and the
 blocked runtime gate. Audit packages/source and six extracted DLLs are retained
 only as inert, ignored `.local/milestone4c-audit` evidence. No Apple component is
 copied, bundled or licensed by Cardryft.
+
+## Milestone 4D source-built selection
+
+The [locked build](native-build/README.md) uses upstream libimobiledevice 1.4.0,
+libusbmuxd 2.1.1, libplist C 2.7.0, glue 1.3.2 and OpenSSL 3.6.5. Exact commits,
+archive/patch hashes and build systems are in [sources-lock.json](native-build/sources-lock.json);
+compiler/package hashes and source archives are in [toolchain-lock.json](native-build/toolchain-lock.json).
+This selection does not use the 4C MSYS2 OpenSSL relocation/CC0 helper patches,
+libtatsu/curl, GPL iproxy/inetcat/usbmuxd/readline, C++/Python wrappers or Apple components.
+
+| Selected code | Exact license basis / notices | Distribution and source/rebuild action |
+| --- | --- | --- |
+| libimobiledevice (including common/userpref), libusbmuxd client C | Source headers LGPL-2.1-or-later | Select the LGPL-3.0 route for this combination; retain original notices and full LGPL/GPL texts, matching source, changed build recipe and export list |
+| libplist C and compiled libcnary | LGPL-2.1-or-later headers, with MIT file exceptions | Choose LGPL-3.0 for combined library; preserve Michael G Schwern's time64 and Serge A. Zaitsev's jsmn MIT notices in matching source/release attribution material |
+| libimobiledevice-glue | LGPL-2.1-or-later; SHA files retain Tom St Denis/LibTomCrypt's express free-for-all-purposes permission and no-warranty notice | Choose LGPL-3.0 for combined library; preserve the exact additional SHA notices, without assigning an unsupported SPDX label to that permission |
+| OpenSSL | Apache-2.0; copyright headers and LICENSE.txt | Include full Apache text and source notices; mark Cardryft's informational build-text and MinGW system-preferred BCrypt RNG modifications. No custom external provider/engine or MSYS path helper is compiled |
+| Statically linked libgcc support, GCC 16.2.0-4 | GPL-3.0-or-later WITH GCC-exception-3.1; exact COPYING.RUNTIME/COPYING3 from locked package/source | Compilation uses GCC with ordinary C/assembler inputs, no non-GPL compiler/intermediate-code plugin. Preserve exception/license notices and corresponding package source/patches. Exception eligibility permits independent modules under their own terms; it does not waive LGPL obligations |
+| MinGW-w64 CRT/headers, 14.0.0.r426.g4564ee4b5-1 | Revision 4564ee4b5063097bf747af3a3f8270a28adff820; ZPL-2.1 overall plus file-specific permissive/public-domain terms | Include complete COPYING.MinGW-w64-runtime.txt and package notices, not only the umbrella SPDX label; exact CRT/header source archives and recipes are locked |
+| Windows system/UCRT imports | OS prerequisites, not Cardryft redistributables | Do not copy local Windows/Apple DLLs; the future loader must resolve system dependencies only through approved OS locations |
+
+Source headers, rather than package-wide GPL labels, establish the selected plist
+library's terms. Its libcnary object code is included and audited as LGPL-2.1-or-later.
+No GPL-only device tool is linked into the selected libraries. Source archives may
+contain excluded utilities with their original licenses; supplying their unchanged
+source does not make them runtime components or authorize shipping their executables.
+Cardryft's dated/reviewable patch records also identify the Windows export annotation
+change and glue/usbmux library filename fixes. Original copyright/license context is
+preserved. No protocol behavior is modified by these library build/export patches.
+Cardryft modified the upstream build/export files on **2026-10-07–2026-10-08**:
+libimobiledevice `Makefile.am`, `configure.ac`, `src/Makefile.am`, `src/idevice.h`;
+glue/usbmux `src/Makefile.am` and `src/Makefile.in`; OpenSSL `util/mkbuildinf.pl`
+and `providers/implementations/rands/seeding/rand_win.c`. The matching source lock
+records each patch and SHA-256. This notice accompanies the original archives and
+separate patches; source archives themselves are unchanged.
+
+Apache-2.0 compatibility is addressed by selecting the libraries' explicit "or later"
+permission and applying LGPL-3.0 combined-work conditions, not claiming an
+LGPL-2.1-only/Apache combination. The MIT application source stays MIT. See
+[LGPL 3 section 4](https://www.gnu.org/licenses/lgpl-3.0.html) and the
+[GCC Runtime Library Exception 3.1](https://www.gnu.org/licenses/gcc-exception-3.1.html).
+Full applicable license texts are preserved under `native-build/licenses`; original
+upstream texts and copyrights accompany matching source. This is concrete engineering
+compliance preparation, not a legal guarantee.
+OpenSSL redistribution and change notices follow the
+[Apache 2.0 redistribution terms](https://www.apache.org/licenses/LICENSE-2.0).
+
+`package-source.ps1` verifies and stages exact corresponding sources, toolchain-runtime
+source packages, patches, build scripts/locks, license texts and notices beside the
+audit. The GCC source package contains the upstream GCC 16.2.0 archive and recipe
+patches; CRT/header source packages contain the exact upstream Git objects and recipe.
+Their source-package SHA-256 pins cover all contents. Individual recipe/patch hashes
+are additionally recorded in `native-build/toolchain-source-evidence.json`.
+The compiler's own executable/tool-only packages are not shipped with Cardryft;
+redistributing that toolchain would require a separate complete tool-license inventory.
+
+Before any binary release, distribute the complete MIT application source and matching
+library source/build/relinking information with equivalent download access. Include
+notice of LGPL use and reverse-engineering/modification rights. A user must be able
+to change compatible library source, rebuild it with this recipe in a fresh workspace,
+regenerate pins in a modified application and install that modified application.
+The source route is LGPL-3.0 section 4(d)(0), not an assertion that exact-hash official
+loading automatically permits replacement under section 4(d)(1). No production
+manifest/pin generator or interop exists yet, so that end-to-end modified-application
+installation route cannot be tested in 4D and remains a release gate. Official builds
+must retain fail-closed loading; do not add an unsigned DLL override as a shortcut.
+
+Earlier 4C planning/candidate evidence follows for traceability; its mixed-version
+binary hashes and optional-module license rows do not describe the 4D source build.
 
 ## Native component ledger
 

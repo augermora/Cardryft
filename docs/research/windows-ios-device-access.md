@@ -741,3 +741,36 @@ under `.local`. Core independence and existing reference direction are preserved
 No packages, runtime binaries, production behavior or Git history changed. All six
 reviewable documentation files remain uncommitted. Controlled hardware validation
 is **not ready**; no phone was connected or queried.
+
+## Milestone 4D: reproducible build tooling (2026-10-08)
+
+The 4C proposal is now implemented as [locked repository-local build tooling](../../native-build/README.md).
+Pinned upstream libimobiledevice 1.4.0, usbmux 2.1.1, plist 2.7.0, glue 1.3.2 and
+OpenSSL 3.6.5 replace the mixed-version MSYS2 runtime candidate. CLI/service sources
+and wireless pairing are excluded from the root build; libtatsu/curl are unnecessary.
+One exact UCRT64 toolchain builds the entire candidate graph. OpenSSL has no config
+autoload, DSO/engine/module/compression/legacy loading or socket BIO support.
+MinGW uses the Windows system-preferred BCrypt RNG; no external legacy CSP is
+selected. The Windows export annotation and library spelling fixes are also hashed.
+
+The [4D evidence](native-dependency-manifest.md) records actual clean build results,
+DLL identities, recursive imports, export inventories and remaining gates. Build audit
+data does not authorize the application loader. No real device communication, Apple
+driver installation, runtime promotion, production data structures or new tests/packages
+are introduced. Existing automated tests remain fake/synthetic.
+
+Review before any real Windows/iPhone experiment:
+
+1. Explain/authenticate the pinned TLS setup's security-level zero and disabled peer
+   verification; never solve compatibility by silently weakening certificate policy.
+2. Design existing-trust session setup without Pair/Unpair/handshake helpers, unexpected
+   metadata queries or writes; the non-handshake constructor's extra reads remain a gate.
+3. Bound native frame allocations and every operation/cleanup; test ABI ownership,
+   cancellation and shutdown without hardware using reviewed stubs.
+4. Reconcile CRT dynamic symbol resolution and restrict OS dependency loading, verify
+   file ownership through loading and reject changed/unapproved binaries and overrides.
+5. Exercise the compatible user-modified library/app rebuild route with regenerated
+   official pins in a locally modified application, then finalize release notices/source.
+
+Stop with explicit owner instructions after those gates and repeat .NET validation;
+do not enumerate USB, call usbmux/lockdown, query a phone or read pairing records in 4D.

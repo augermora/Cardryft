@@ -1,0 +1,803 @@
+{
+  "schemaVersion": 1,
+  "base": {
+    "file": "msys2-base-x86_64-20260927.tar.xz",
+    "url": "https://github.com/msys2/msys2-installer/releases/download/2026-09-27/msys2-base-x86_64-20260927.tar.xz",
+    "sha256": "ea2f31a0b6ade63914ce441ffb022f0f6aa96982bfefa2326460a26d5fb01322",
+    "builderRepository": "https://github.com/msys2/msys2-installer",
+    "tag": "2026-09-27",
+    "commit": "cab3ac77dd72651a5dcfe16cb327abc2fa529121"
+  },
+  "metadata": [
+    {
+      "sha256": "a0567b8ba596c27d3a3472c8ae8442e444c312b6c98267a9e19dcf85553b774e",
+      "repository": "ucrt64"
+    },
+    {
+      "sha256": "f7222a32dedc008c982b653417590d76ee8281bf1d3024d3fc70b558ff9cca91",
+      "repository": "msys"
+    }
+  ],
+  "packages": [
+    {
+      "name": "autoconf-wrapper",
+      "version": "20260320-1",
+      "file": "autoconf-wrapper-20260320-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf-wrapper-20260320-1-any.pkg.tar.zst",
+      "sha256": "84c1f93d4450b3bf1ef567110b51c15ffb3f13670d656cc48fea70a01371b20c",
+      "licenses": [
+        "spdx:GPL-2.0-only"
+      ],
+      "dependencies": [
+        "bash",
+        "sed",
+        "autoconf2.73",
+        "autoconf2.72",
+        "autoconf2.71",
+        "autoconf2.69",
+        "autoconf2.13"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmm/pe4ACgkQ+hFTGqCqf1c60hAAl/jskP6Iup1Fmb/fqBZ4Fa9NOsC2bUc7p9eoLyKZYbKt7ZNz3Y/UlHqjSGBJpStRZvA8d6HN4mmBbi6hCC+0CYSVXlRR5Eu3NmFLQGW/W2nDBlnDqcfv3xYi0dKevaCIWV18PmAWqp+AsywrOu87mvlxI+PQm8lqcH7Ym5RDfh3dB3oscu0uqL5EnI7UNke8+6Pchp9BrDPvVPdU48fBU7558utIJIPoj9FGelvVwwEQytr84JHptB8Ws4kSQ7IvRTY3hfdlr4B6/fQDpEB4vGL/urg+Iip2TQbQ8n7oL3ifJWgsndv3CL8qjkjpvmts+el6YkW50PPscQsctbOwtHbxwZguIzET0OYqnn37KqNKY9WoUwihgXwKt56by7FovWFbjXHzQeMmMut/vFXEl62PUFDHjyvWH7badjXiFL5TC6f8t3XWRdLfVnl09E1QBZFYgM2hjL+4U3FK0Dt7c6lt38Jh/OuW/NVf1a5GAWbQHy/RVCASM7J/fDyCi0UY/X/B0oQ7w2Y6yqEjoySDGxkv9Avsf7zHoB/p5TwfnPWNX22OCznEPcDNQLKSOEH9Y7Zgv4ChALJOg53lNoiIM3evIJ8/kMBh1s5tY5tr8pbLWo/HDzMuvAqswEU0q2e8RRLP8rt6aXBWk9oVxEZF/i33tPQ62Isr8NAdXLPBDyM="
+    },
+    {
+      "name": "autoconf2.13",
+      "version": "2.13-6",
+      "file": "autoconf2.13-2.13-6-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf2.13-2.13-6-any.pkg.tar.zst",
+      "sha256": "38bd817375f053b6d939f80a30582d05bc6ed5cd07db135e7f3120a27f1b9512",
+      "licenses": [
+        "GPL2",
+        "GPL3",
+        "custom"
+      ],
+      "dependencies": [
+        "awk",
+        "m4",
+        "diffutils",
+        "bash",
+        "perl"
+      ],
+      "signature": null
+    },
+    {
+      "name": "autoconf2.69",
+      "version": "2.69-4",
+      "file": "autoconf2.69-2.69-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf2.69-2.69-4-any.pkg.tar.zst",
+      "sha256": "56b2de8e53e46a88bb217a427c2f7b5671ac6400148681fb2089e9b7be817364",
+      "licenses": [
+        "spdx:GPL-2.0-or-later",
+        "spdx:GPL-3.0-or-later",
+        "spdx:Autoconf-exception-3.0"
+      ],
+      "dependencies": [
+        "awk",
+        "m4",
+        "diffutils",
+        "bash",
+        "perl"
+      ],
+      "signature": null
+    },
+    {
+      "name": "autoconf2.71",
+      "version": "2.71-4",
+      "file": "autoconf2.71-2.71-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf2.71-2.71-4-any.pkg.tar.zst",
+      "sha256": "55be2b911beaa0424d60fdcf206f2411a0eb24cb53e66a82964497ef8a4faac0",
+      "licenses": [
+        "spdx:GPL-2.0-or-later",
+        "spdx:GPL-3.0-or-later",
+        "spdx:Autoconf-exception-3.0"
+      ],
+      "dependencies": [
+        "awk",
+        "m4",
+        "diffutils",
+        "bash",
+        "perl",
+        "sed"
+      ],
+      "signature": "iQIyBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmcl1jQACgkQ+hFTGqCqf1dAnA/4kdSuDkeiJg5/AyGcBIzhq0BMNv08a8Blx+0yUpEYOcUPbmS4WzbPY9+VkRJVxxutK+A6dS6Zlv8jIlZ50iy8kBmlHW5OBWQn+/pCx7rNXl1m3hC5CRLvL4A0L6K/KFyhBvpBZAs6eTCXG7xnCoFspQk4OqD/K//oh0UWo9bmeNp6oT4bHCPQpoOdjJJdgF3r8Ud/j+96RPZUIBZNfnKM2sMh+Vq0UOBJvAW9C3gB3iUoze4tZhqo865kLXarNkn3f9MktIQUEOJfsod2LcMV4sICywFUysbpNdu8hFWfHanMdBtbpUTQG5DPHjkErD41dRJPRupJId5oTmMKDXMP3qKpbcPxcAxJmVtrBFxRRxruLMW2/Sox4Zkp+SDo4mCa1pSVPDJDykY9eePW4M4YCiz+2CZ9tDiv6/1PQBkC//NgBuYBfeU/YdG3jEtpVRv/+sz67iwyKUCA4eH9fnTWu+COj3Z8uVKG3FHupxl7WekBg4GJTcHvV+NhL7A2cz/P5cwjgSLCAeNYfDTwo6153uTsp2f8sOczoK37Dtd7falH3dHADoqmlOsz7lB0Cfl7FRXx0hPY6QORK8DpIWrwf1CCvQgo7lSeIHbLftzSAmDwWPWknU3vOJ6efNZ0arQ+sGC00P3Uh/YuVdh+/KGtqZNjD2D7JfhAONLGo7W/0g=="
+    },
+    {
+      "name": "autoconf2.72",
+      "version": "2.72-4",
+      "file": "autoconf2.72-2.72-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf2.72-2.72-4-any.pkg.tar.zst",
+      "sha256": "65b3a37edf8bb4221d38db910ce1acc1ed879c7bcba33faa058066d06d35e7b0",
+      "licenses": [
+        "spdx:GPL-2.0-or-later",
+        "spdx:GPL-3.0-or-later",
+        "spdx:Autoconf-exception-3.0"
+      ],
+      "dependencies": [
+        "awk",
+        "m4",
+        "diffutils",
+        "bash",
+        "perl",
+        "sed"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmm/pe8ACgkQ+hFTGqCqf1duvhAArBEvVno7EhRgSpDaaM8ezr93aQKC8qpcLTa9kA/AokDKKwsJ1JuKa21fC1skvviPmg3+Er4TqwAzGm1ybPYfbSH6Pib8CkCUJkzBTknnKs1TkTdAbKIrehxI/xGnaRm462tQpJj5SissLMODHLmFZj9OQX6zjC4juoPc5D9h7MsJUm3FbtYXjbmRJ74XqFIJX7wUHmfzOn7owhV9XehZRwFicKayydwtLXg0NI+2UIKG+99eSsHYWUHPE8lxe6nx0pyUPogt/T5NnNNQL/ndIAj0oD1EhP2A+Cel5ZurUeC0ZNHQ7ztPvUgJ9UvJdbkbsCAjx+qSjy41wkUowAmW+Vet5U9EdcbjWNpe9RJlv7BywmDsojd3I+tFsBN6w6WgWqwVF+Hlrt4E60ErKld29iFVeK0QGXTWpbR/ePF9gsBhn1NcWQjAC/QuDZlufCbSQjhDEFeBomtNihd41eZqQXgDoThAyXCxTweukxYnUDJvqNNhFI+PTF1NhKrd+CgcjxiL54l8Ttl7SYtFGteL8yRMEgV3Dazr1exaQ5lw0d62kYathwYm1MGXPK9h4+sL3F5iB23EMIzKEUBi8+51PHBSb2iq1BdBf0UWP816Zx3IeNuymUJPrVwANRDzRX4FTSe8zgLb/LG3K49NRpoA9u9zAbsCpwGdGkXcU+7eXM4="
+    },
+    {
+      "name": "autoconf2.73",
+      "version": "2.73-1",
+      "file": "autoconf2.73-2.73-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/autoconf2.73-2.73-1-any.pkg.tar.zst",
+      "sha256": "716d0542dc12a481f1c2d5574f17f1470eb9d3226cf6e206d4e243c12fa95e1a",
+      "licenses": [
+        "spdx:GPL-2.0-or-later AND GPL-3.0-or-later AND Autoconf-exception-3.0"
+      ],
+      "dependencies": [
+        "awk",
+        "m4",
+        "diffutils",
+        "bash",
+        "perl",
+        "sed"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmm/pfAACgkQ+hFTGqCqf1cLpg/+KLWhQI0u+Z5TrYKlFJeUituAsqt+qsTLr2C8RPGDXf7/YI5pxrZTBmLLc85C8wJo2nhQlSzSMj2DFuxJ4xY/E5BUyOiMu5ceFpdPGjbLkp4R48jzAvT+4ioLh6GiBywXrRa1gFzoRnA3bpUaXiIQBP1g/G36c0VpmrBmmvLFjyy9RDPQtM4i7VOb2sKAYZEUgc4qFyXdj7N07CmcKVYCaeF9YwQ9aa3KgcDK3QI7I+HyFgZFS6m6u8J9mlY1BVdeTVpHox/6nhaDGNALZq/5ilz8CzoGVXuRjm5Iskx/WUkHX+0rATJ/ag09TT4wcfaMS//UhCCY0ZgRYSQavc962it2RJhfyA3dkq2ws6CZg7VdfxGeOs/ddaFPsJoAZKtR5bP5CfFykRwpB+QZlmUa9TzEspD/ZutAyNm0uDn7U8BagiknPOwzDtRPKdR2dYeiw0g5eYt7USjzTk20Ilw3grG+vzDDqtqXgX9NKdRInSpaqITqTa5Te6ijZ5wSDW3G9/8EpIzn1/yWFzqiVBmfv71oLVab659T2N8lsIZC97xI0GgwB1zRxgdQZiTxNX56oDwdd+VMaNvrHzlmfEBFxeKkEes8WLOshqJ7aibVMCZVANy1hZnqz96BLsJme6MrZ7x/KAXOLDU2SrPznEZfTBZftk9WgzGoT9WKouommy4="
+    },
+    {
+      "name": "automake-wrapper",
+      "version": "20260320-1",
+      "file": "automake-wrapper-20260320-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake-wrapper-20260320-1-any.pkg.tar.zst",
+      "sha256": "693817c288c81bb9f94ac92e5b6f914402735b80bb33e326ccddd7c89cc6a719",
+      "licenses": [
+        "spdx:GPL-2.0-only"
+      ],
+      "dependencies": [
+        "bash",
+        "gawk",
+        "automake1.11",
+        "automake1.12",
+        "automake1.13",
+        "automake1.14",
+        "automake1.15",
+        "automake1.16",
+        "automake1.17",
+        "automake1.18"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmm/pfEACgkQ+hFTGqCqf1ftYw/7BTrVl8P1bBQM2dkU+c/7RSazYWtzQm6I2qoYl2E5P8Limj/bQKkAUd0FXRW3B/7ag0lxb0qAPxJRIHqb/oZqK6RQLMckIAF3j1CleIvguqU6vALojDi365ijfEzRhE/ye12zeAzFxzorI3v5aYc/aCdXi7lB3qlufzj6Tp4HUJc2PhJKRA4uTa2XqHbS7TZe7R+ykXCovo2TeG89Wa/89fs74hG2IHCTbAPArW30zru+H7JvtwNi0xPFlvhgpuEQsIS70A0HD3L6938AbjGPoT1XN2IVhcxFR9qCwfw50z0yBFKqgGm0NXUXF/i/u7Qg+G1p7bAe/XlwXrDSlViE9kO84YY+FJ0hVJCzDB3SZKRugVfFV61xoufO1iGWytIsSYkpIU4E/ircS5ZCPY9gcDfEISrExsmU3Bc9z3dPypPyQA8fqAJLDep/AoX7AWew618/RrxBcyVRjl9zoEylt8PVXKEQ+XarUJ4/sdN2iKRxLSdfcieqVuBye8Zok1VI2UHj9LLV/hb1zE/rCY1D4dWOunoIgLd+YwqZrETdVWphsMXTO1WQrXuX44XMQJFA7Xp7Q73Sd3tUri+Zlctjagi7/Z6JKiHPjmTRDjy9ARwcfeW8eUy8fTRGOd+KQoZp+WEo4juRHcnXcEc1GHW4UChrA1qj1EYAmXdd3UfHuQA="
+    },
+    {
+      "name": "automake1.11",
+      "version": "1.11.6-6",
+      "file": "automake1.11-1.11.6-6-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.11-1.11.6-6-any.pkg.tar.zst",
+      "sha256": "25ecc6296e1416513153c290442cbca6dcb813c1c50e5beb3a708408ba5de3a5",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.12",
+      "version": "1.12.6-6",
+      "file": "automake1.12-1.12.6-6-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.12-1.12.6-6-any.pkg.tar.zst",
+      "sha256": "b6c91241999c6ff8d04c5ea8011b10544a373b01eacb7993c66db99e5f4fb373",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.13",
+      "version": "1.13.4-7",
+      "file": "automake1.13-1.13.4-7-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.13-1.13.4-7-any.pkg.tar.zst",
+      "sha256": "a0d3eb1b359a67c1c8a9161cf79ba681cccabf47c78cb40d3065b5eff02a82f0",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.14",
+      "version": "1.14.1-6",
+      "file": "automake1.14-1.14.1-6-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.14-1.14.1-6-any.pkg.tar.zst",
+      "sha256": "0b097559c1fa79124552334b63d13417bcec8a08008ab65f77d27300a4ccc5b4",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.15",
+      "version": "1.15.1-4",
+      "file": "automake1.15-1.15.1-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.15-1.15.1-4-any.pkg.tar.zst",
+      "sha256": "e3c73d0094eebbc2353b2ddd0b7c81020917c2ec09d3e4967d7abc9794fa7843",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.16",
+      "version": "1.16.5-1",
+      "file": "automake1.16-1.16.5-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.16-1.16.5-1-any.pkg.tar.zst",
+      "sha256": "1963b5fa0ab5eaf1bdc311501cd742c6bb19941e831dcc8ab1e51a8c7f1634fe",
+      "licenses": [
+        "GPL"
+      ],
+      "dependencies": [
+        "perl",
+        "bash"
+      ],
+      "signature": null
+    },
+    {
+      "name": "automake1.17",
+      "version": "1.17-1",
+      "file": "automake1.17-1.17-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.17-1.17-1-any.pkg.tar.zst",
+      "sha256": "bb069dbb6f580c2346d2f6d74268b5e12e625f7ba57299426f9cd6c0fa714191",
+      "licenses": [
+        "spdx:GPL-2.0-or-later"
+      ],
+      "dependencies": [
+        "bash",
+        "perl"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmal2TIACgkQ+hFTGqCqf1c4Qg/+KhxXDtGo76RlHnjFPcrPQv4ZfQYL7qJvn7IvAjEf22AIYUhzaDbgRhIT+9pn0vib+mxam1axOK8RrSPPsLcBXpuJ5HURvVbgJun/xcyfHIaksJ4rmVuFrfBRqAw6p57Rh6uUoXW3BY0JBvLStQ3Tyl/zXs4xX7v/+vBsTEEgTaHU6bos3hFQNnx4F0wsduC5IWUHJM9kyCT5q3YOWQVcDfohbHNzYVXIZ42o0W+etxhE9qYx/x10/xxDacQkx9uz2F4dC3PgpfOwNt9MpS0RZ4+pWkGH7YZh9V3j/NAFAkO4TfmlFJNDNn9oqd72tXGFIl8Y0rnbaim8NuqMQ6w52Qmnnen5g2OJ1OK7Nd+tfWft2c0HKezicjkUIqxYCwTqbaUvJnVKSHrgBeCKxWQcF07B9HRrAA07uxoaxs/yAvyk6C8X8LLwVD8bRzDf4x9dKAnJHagWgEUempuv+ngz3M1he/XYb0xEqVfRlhM1ZKaPeJUGNBhCuxKcRX4iHDdIuGNrOPt53fXgv1ll7DEuVfnm3wk5stjN/6SpsV+AZp53rj9lQtoF78b8WwHImpGsO6NEGVJCNNwnI6PYTfxcWNtx6ii9EzPlDhYmRaAQFENkR27k19EgqhBlx+TyoFwOJtDFeU1sCPLZIxFEorE83H3MS1Yy55bvWiCjeFlN/mE="
+    },
+    {
+      "name": "automake1.18",
+      "version": "1.18.1-1",
+      "file": "automake1.18-1.18.1-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/automake1.18-1.18.1-1-any.pkg.tar.zst",
+      "sha256": "c045d9eddf900dbacae06d9e0e19e250cc32d849def7d06b833253f85e3fc941",
+      "licenses": [
+        "spdx:GPL-2.0-or-later"
+      ],
+      "dependencies": [
+        "bash",
+        "perl"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmiRfEwACgkQ+hFTGqCqf1ebTw//aFprSQyPss4l+yOhtwc6+vA23h3u/vALcPGG6lNIu1Fkp+DgsPXor5RDHgoX5O1xlieQBnorYcyO5fveuPgNNWkG/1XHKnKy+3LcGMqt91w0v3WaM38MBSspRCop/RDe1jrDheFd+3qUPnielmyQjpUC3dRf9Rmsb/uEouQPHNEvEsKew02BxFtLNJ27qGUBtm+L+F11YvjxR5LgILRAOi1A8B01I5tcuVn5ZXjyThkehN3RevBi+rsiEZopareuS0NFs87CJilIU8rhdZvbrPhj7zQmpMOfT4Km5nojzqh/fW0Rk/6VRn1sOyCIn4JA4vA8qKv0Fkwb2Av3552vOnTGm+zw7fsCMDb1fpnA9f3pEMG1XW8v3VrirLYg+U9QM7eoIZM2ZAmWJ2teMHMM4EoiRrP31dv+5xb5ETuon5OvU5ESFtg+xmhskIuRt38iQn+g1QDow9Q2UOLVRVYqLQoee5Bq1Ed/9FkC08WOxeESSRXXeVMIOnEWtrVvkO4LySI6uPtbBX3Jija15FhbUXRnGqCgSGKXdHHCUhaQcuai+6tfeAe1ntEJdTyhp2CxJQwOYwUHA6Ctl/N26ff+9V7c8vmVyghXhFmeZUCwenu7mS/p8ZZE0wF5dWYJggoIQExgKaPrr3ZolReqiTutSKeufQgoE1anDXg0UOtyeF4="
+    },
+    {
+      "name": "db",
+      "version": "6.2.32-6",
+      "file": "db-6.2.32-6-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/db-6.2.32-6-x86_64.pkg.tar.zst",
+      "sha256": "41bc94acad3b53eaa92227ec34412305f648848ffbc963bcad88274517e13e8d",
+      "licenses": [
+        "spdx:AGPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "libdb=6.2.32"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmoPP0oACgkQ+hFTGqCqf1cAvRAArq0ZS24iSD6V4kRXiaEgYaMLGtgioq7yE0TkEyTjS3iB3bpxdvGBBOjob5PNDPXkCvjJk1elqxzwTtr68CsRdRloMwLjRLKryGizEfm32s6WeYqVt0iHabzz31Kx7TkOYLkc1lw7FkjyZ53glamqIzkXFIWdXdTX4ZV3pINZMabztjSUr4YH08uw+lIEGM6MuF6CT5EuZIAHDlKdK1NRPfPCvmJB9JzEhr3GGGvIqyRrzkjXdBt2Td6PGDV0dq+dFgZvx3DNiGL2qHNZyBcBziJpm2tph+A1XHgpIIpv8a+3neUORjDFt5XiT0n8Vw+D1nQE28rqwLT3YZtgDgH4onOXariGtorn3T9morZgEuiy/HEd8f58Oe/2DGwF1CoX3N2MhXwRNzbMCWEEl+WIXE5yODRUXEpjkSsInlGEbXFH2z8gDq8/ifPQeo5oajvVLGN8o+25tuDgx77jJAXsHQT9zDcRl0IYR6njiUAQ/E5uoJQXNjx7F3tCbaEaNv2n1EClbw1brrrcxpKwH8KZIr6w4AzB5/RAI3A0ku9i3ABR7KXlxAEcq1L6iD66iwupRNVDH8lGmOoJVW660YO5QZVbJaS8pcXnlFWYfW1PKFZcC44GxeEk1s5p6ZHvxKxQ1OgEp5RBHYJCYmIvpoRwZy6J54gO8cYMCvtlMUJiWik="
+    },
+    {
+      "name": "diffutils",
+      "version": "3.12-1",
+      "file": "diffutils-3.12-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/diffutils-3.12-1-x86_64.pkg.tar.zst",
+      "sha256": "7902c8ce3d4dd69a0f5e98dc9d5c83c17b23314ba486169db57ef6e2835ce3b6",
+      "licenses": [
+        "spdx:GPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "sh",
+        "libiconv",
+        "libintl"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmgCIp4ACgkQ+hFTGqCqf1cvOBAAnvm8nA8cLL/38yWRgZEzyCNoOqPT1+B9Whq6ei3dXgzGRs+ity8TgxfsXvJDX616Rt0cDSHoedlLPqVmBXA+UV7isbNrpsbAc7bxvelWsj52nmGaIBiA+FIpydC9T/J/G202LYhhLEXfpaDg11w6UaaDJ9wMXdwswCHMA3EITr+tL8pkl0ABZ2GLDEtvtpo6HkN3jM4Yu1s551yViLjvBEGI/1X+BW9g4nbS9BEr887AKSgYVKG8xJqTZUqCla25n5Rbty/qK43LqlT213E9Gr2DyWzyofiDAq2BqJCwjWAzMaf4V89PUmdFybHGxChUp4CtdUY6LqcTgSHNJwA3cYgCfi9oyH2dNoI/QR7cSatpdjjaykQ+EeI2EUVSpkchNnFTLBEd4mQS6mStzdASPuHwT1lxufk28pEE+tlgHjBhHKyImGwm3f/koGZIq8seZvUTAbxkK+2/06AH7ih6aJ5v8WwBhwtD9WpdMKfW4RPoy5bfTnckCUIzXDvKcRIDR1h9P4r5jMU98lizRJ+8mvK4+/39JYzTfro+ro9iO2a6/scUcGXnO3aLDNjQ5wa2N4w9EIvr23VbcnizeS8xpXWOcm8DSxNYisMT/JVALrkFlyCBHgXpuF5LY76/QkHMVc4peJfKIeGsMDrdf26OJE4MF0ICrcaePjNSm5hEspY="
+    },
+    {
+      "name": "gawk",
+      "version": "5.4.1-1",
+      "file": "gawk-5.4.1-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/gawk-5.4.1-1-x86_64.pkg.tar.zst",
+      "sha256": "4b1322cb6c83d61fde5100e229e3cabc5b7d01fc0d0d8bc311edc08df91916be",
+      "licenses": [
+        "spdx:GPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "sh",
+        "mpfr",
+        "libintl",
+        "libreadline"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmpVTQ8ACgkQ+hFTGqCqf1dlAA//bUfJ2tY6fP9o8bRbWKLDO68/hiJar+Oy278xNgLfukeS2T400FZ0TCFWbig75ZzAds+eeK+BAHeVozw5ZKebt2Eu7S5jgSpfAqxQzfvDRtWcLNDHPDuymtz4se78RAH9mYzR/Vd/8YdW9LZvXgsEDJAvG2gH/OqGOGl3Jx+QzvVuymCqfa6lxii2zndukkfA13uTX+uxZRWQKMJo+LerC6MDexKrJKutz0Cufln0zOnzXzzeDvEbGjX2S0fvLMFCKsInDJInLg3xrWHU/+vxv4yHNE8NAMnfeLTQ/w9CTZXV3Lre4FkWEykp/V78CTW89/AFAEkZR+Y8hfmMl7s2H/fPVFawM+Wyzffq+tKrpc9dAfmklKq9u5W0u58Ze1Fy1D1c8v5MjAEMXp8vJs4uSulYIfzO3X1gmbhJT5D+v658dcC9sZcrBJpwmBlCYC758325289X5o6kU20zsZyNUTRcGuAeIfb0QwRXkSdV4TjgDFVnblkvdO0qadgtc+JX063MYYs1K0BRVcs8XHog0dC4sZIhBq5HaQwEN9X0bW8doMFhdf36pXA9T4Ns1nv4QDLx3/d4yQWvtJ9iowzD1m7U9Vxc/Ey2uqn+l0ftGKiTa4eDse4/IBshj+/P2mndgILGA5VELGi42D0uIj60dwdynA2l2IbRqqB5cnLNOkw="
+    },
+    {
+      "name": "gdbm",
+      "version": "1.26-1",
+      "file": "gdbm-1.26-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/gdbm-1.26-1-x86_64.pkg.tar.zst",
+      "sha256": "1f8e949be2bbe488c5644132db78ecda288c9945922e7ed2447384734e2adba2",
+      "licenses": [
+        "GPL3"
+      ],
+      "dependencies": [
+        "libgdbm=1.26"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAminaQEACgkQ+hFTGqCqf1edVA/+KIJhKW95N2eNcculdsB5qHCbEnqBBIFXhmuKGgqRnIpF0fB7zCwMhft92mjkF5HYbstHWjAzl1ohIHdRXIum9y4imVfPhoQ+4nz6hPdyetp12WVcF9ZdKjt5JS4N5hdOLbldReiX0lLScz7n5MGNFTtWfaYnb7B7S51kqCwRXQnCzHDYqPWWrqdDHj1yTh6cb6SyJqzw+lmKIC0HJqFZ29lKc46SK1lHrkJK3iAe/s/75YdXIHoqtexh6+6aSydmEaBqB5To8WAqvM2db7eKLMqFyMTwsBal5uevxWF9JF9LzXipsAFEsTaP1syBiMh9beEp84YfoAaoHH52Qe6BS/N/csenhKsJ3nvXkKKp3gLMBcSodUgxKi/ZZsi/reotVNndmlktQPt8PjfoXjhv3X1dc4TJbbySUe6QnfCo6tF70cZw+rCrGcznN0l0+NnGWqG46bvNHkhlLvTS5nE9tZPMHjkppjaPnjrZiY9SznQF+Q/vwvKqphj0Xtqguxo0WZWYEJLlz6DAtAicp6bf6hCXCy+obnd5274RTFHWMiNrrsW8NVRX82wSbg5Vw5v6fyqqWw23c+9zdbHElK84SFNVQqxpYVvH6lFbN8HqxubPIkE9jZh8kosy/mlA2WdtXokVlcRzLVAt0rqqDs6uj465mDglOUzFxYNFx7DmJYA="
+    },
+    {
+      "name": "libdb",
+      "version": "6.2.32-6",
+      "file": "libdb-6.2.32-6-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/libdb-6.2.32-6-x86_64.pkg.tar.zst",
+      "sha256": "27a35786f3aab14e625c02df7bcd8a9dda0da782ce4f0549a427a21316b4d179",
+      "licenses": [
+        "spdx:AGPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "gcc-libs"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmoPP0sACgkQ+hFTGqCqf1dcig//bgf8hheDBSNoqUIamMZN1X1ARmochPeagkjw/s3yCszzUjo2pnyR7W9PiINTPu9LKJy+tfV23Y7FxgVAppnkLLy4HxjF/LwPeNN7utJizeHNyylqgFdOKlNUdIFqoAd7pUh2jBDYASRR/ryRfidhNyshfCmApGJOciCM0J/HfE6f5A7D6n7nqOlo2oA7ujvDMkBcu4YiEForPWFyPiiNum+uQ6gbHejIdbTeTIVm5O+2oSwMmN0dYZJW9kpIMAYMeTep2H1o3EpiO4g4HkHBI5ie0xmNixIS5Q7esoaOh5podkOQ5D2Vm7jPRZY0Wp5HG7qWBGmz7UTy7UlsNqhbp+w+6lXO0pABdUK3yg94ctFNf47XnCuz9Tu99m46v2Rt/fWxAJVIkxwX3E9LH17DxlXBcMJZmbFEhdzPdAaFq1cWDP5xeQ0CgzY1McqVt0VlA9Wfxc5FqWqFY9xRPgLtlszKheucx4MPudwMlerZuHMydiWjF3CWKaCIiaCEuCtQlPV3styKJ3L9P8rPnJQPLOiT4WyYHGP5YWsSTM5Tez3k9kveEO+OvoiAUASrZw+RfsVwbpkTlNmcfeFQtWYQss9FsSLIFTnsaTuLjq/hbT8W5CXaJ330U3r4V88jkeq8OtgeLQwV4ygIWh7RVduS94w8qMscCo+paoncl4cNvJo="
+    },
+    {
+      "name": "libgdbm",
+      "version": "1.26-1",
+      "file": "libgdbm-1.26-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/libgdbm-1.26-1-x86_64.pkg.tar.zst",
+      "sha256": "bb4b08b720dd3194db010589812e9c63bec3d29b32545e7cbd07b6443e51c5ed",
+      "licenses": [
+        "GPL3"
+      ],
+      "dependencies": [
+        "gcc-libs",
+        "libreadline",
+        "libiconv",
+        "libintl",
+        "ncurses"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAminaQIACgkQ+hFTGqCqf1fFDQ/+K4BqFy1Ll/j9OwCWwXxU95JJXomjQcO1HJM5Gcu+o/KOGnwyGxX1mf1fDzLgqauBJpMRqu6MwaAvva7ZDWlFqAevtCENxV6pTZHU6zT6LRvjRjYNZQFO1aCZcxph63jsGUmoM/1ewHEP8aGpV4dZht2Q9Ucrf+AwxYno6qmHY1Uc3hcOW9NMZMXAU6yWKKipSmeqPPgHsbVB1KweowD+4UqpDjX238MLuY91OANfzU6enshzFv9HIWmNA86QIO4vCCfZD47AdrrUlWhkjdfMFFNh7LpnKUs4V5YxCmRgtlg0++2jnEM9nQMyISdkPFSI199oMFZ9aU4gFHY7eRutAfp4x23muiTjjNRO+NSltt6sTDd/HBs/VH37KiGVHs7AwzbN34aDGU//TpmS5GP1M1ARo3XYBfgLH8gDqE+jhTCHqpqB7iJB9vWtR38B5ZW90dZpdpfWJNc5m85uEIGiSV7ildtwERoCLmg1KZf5g99rzANw1Kjm3SsvmQ4uL9xuldsqug6xLoNGG5EXju67jjQ5ztJ3mwlLg7qDESq9E/VA01ySTOiAlDtxiIjPTpyp8Rn6deBLbFuvWkjUcSw1wgJR5o74DwIaN7XXcA724qt68HXolZonfZBjkWmYKwl8/nq3ftpRPXApIS8g+i3qU7KD3KliNYmOSa/631katsE="
+    },
+    {
+      "name": "libltdl",
+      "version": "2.6.2-1",
+      "file": "libltdl-2.6.2-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/libltdl-2.6.2-1-x86_64.pkg.tar.zst",
+      "sha256": "bc17673d87573f997c2aad6680edb57a54a7ab837fd58a95dcd6030aac1f63e4",
+      "licenses": [
+        "spdx:LGPL-2.0-or-later WITH Libtool-exception"
+      ],
+      "dependencies": null,
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmp9WWEACgkQ+hFTGqCqf1dsZA//YT3ly5HeQVrxlzPuLY0ecACjdzWdrkdtHiuZNEJ7c01iplSaQhUpXCWSFR9HKUCVhrkqXB9dKrxqjO3nPrRoAhF+81RRVYTKfvQKVk2PiVMpcidWvdNVNN1/7xd0ARw7RWmGp5LiCKePzgAGhfWf8lqIHgzMn9rtoREXqiI1VN8JsWa4KBfP9OBKMouJS3pHdonIy22Y8y4nuEYEFrvcqWVqQQb268yPKTwpB6bmTD1X8IrF18CrSwJpCVFJOOBEbC2VW2LvkKYIXRVuWpV72Z30IRFMW78GMpc57ImkNgJYBt3QHpSTme8XidtQnddTBJP4/W5GpeT/Cgfz401N8g72rl6U60Vo3cVBG2q8FRiKohgh70pctWubGAKG3nuqWTAxYdHQF67npGFIBzPgDWE2cClFV/11buQMXRgQnCrdXmJrSoFR2nuWm6Pxhp+mkhfVbBeJEtQMhNQLS+grv1hGG/U5j4oQXLUNC6c4YPAcVHw1Psz+yuknXSLz6HITksPsnLLLuop801MDpgVhST0xIubci8g74NZdWWRgYqh3WwSx47lM+b5BLu2fBfKR2ej5mssTxeicbL8Uu4TXOQTSy/DcM/Yw8THKy8tOSyruccvMq6/S5GcGGOTammeiVnF7UbqUVD+zWSH+wBr0sDkCcb7ymA+30d6Ao3F1MLs="
+    },
+    {
+      "name": "libtool",
+      "version": "2.6.2-1",
+      "file": "libtool-2.6.2-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/libtool-2.6.2-1-x86_64.pkg.tar.zst",
+      "sha256": "ed51a0790d6cd59d24f2f76c826ed0e8d85f81bc1ac2807736400ea5e178fc5a",
+      "licenses": [
+        "spdx:LGPL-2.0-or-later WITH Libtool-exception"
+      ],
+      "dependencies": [
+        "bash",
+        "libltdl=2.6.2"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmp9WWQACgkQ+hFTGqCqf1fQnw//UnTZX+uObaAltVEFt4D16DV89KLVgDubEMmD2nFRtODGOTjiYW97IWm1OliKSOg5+pSBBj5WKIFH17rkMtdL+ZqeAsupZF981jB+WRW/WtTNwO5XkjBgORNzJFXiXA6lFCDrgfeO1ezY2t44Syy9XFGkNKcONLVBJoQBqjQz9RyFpQ4v5f+xWQmy0tUHQDrVij2un7K7yLzFPiwf+lQyAYCRfX10S9X/XHwd3aUtz8k8kziYCOSRfbbIyzj1Z+aVldFrUHHVARSpO6hexGPsbYX+6/3wncypM+09spfBe/Y8eSPAAa/WXu3yXP1KtVtnNmeBDHnGNES+swpRcjJXfU0yupo6YHGB0YVrjihuaEwze6pciR5MM4JBIZ2lTA0D4BiNtdv5JFW4oXM9LU7MJGOMi0nBl4w7qV6Mcc0rrX/j5NUW3mCvwKY5Juo8qDeSFLQyyQ3OfAoxhuXNK529YU/7K14suSl3jJppkImTn7ZQ2zFBdeUMoWZajmuIW0fStd0MkW4ZbzpJ7qsslw0xVaq5bPngUDBjYtil0Q0FG+3DMZ8t6QXw/IykZ0HKZlj4xa7u0FNg9N9eLZd+vCMxpr4p4dvchuOSqpzLLk9JyU2Q0HxN9Oztb1fQ4DREu3OozrSwGPDqLEY2Ui1b8QpOS86ReiKHjkrcle/y62fSRr4="
+    },
+    {
+      "name": "m4",
+      "version": "1.4.21-1",
+      "file": "m4-1.4.21-1-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/m4-1.4.21-1-x86_64.pkg.tar.zst",
+      "sha256": "b561e8871c7599502d9fae7196ee965b3fed3d7af09154eb8d2f5e4d9e5e5106",
+      "licenses": [
+        "GPL3"
+      ],
+      "dependencies": [
+        "bash",
+        "gcc-libs",
+        "libiconv"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmnnCNsACgkQ+hFTGqCqf1dlig/9E+xj7hMC1esst43eHv+ZB6mQLwIXO5zP8qjO8WRoySo9INqIMIlPch67wmAKxIu0nh1xtABUfN3aVLbLAll3GXfk0x1QbFd2Fwiuhecka5GA+ohLcdvjE18OAM3qDcx44e3sc5ew0ibB6RD1nNwn9k8Hx7qmxW4sUbIOWO77GQ37MeeIn85ARaMLKEcdy1tSETXTAo6X/Zg9XRZnusOrC25h25LL5CdtbpWjck1qhQ6I7fPWdsauX/oEfMOcH4NAWppiVWYiAFpICUeOMgMrDI5IOdKEkuDq60M5Pz+d3Li+vaZ+5NmtuFnSji9csbGryxC19SInnKE+pyebFiZxXC+YmH4tTfv+5RTIEWlGZeWxDSo3z+k0kVJmzqor4Vc32xgL12/BWIa8SH2TIrK+KIFK1WdoktePXPOlUFFDaQ4i5qNgnSU7i9JC4/pxXd60MtKFCrfF7298bUIZvBOHF1dej33TyZSH9R3wmvxZUhBexPsBJK0xhd35BkEsG864pTyTSir9aD2MYSCYkJXaE5A8aL2FqeJtLKxo5yr8RrQ3QE7QHmfMjkMxfC2/+B+GOZzImz+K7MCdEtb+GngHvRIKX+r8MIndXada3y1wG+unh4R7YEDCkcpX4Y5vzNqk4dT5Nf9HlmQMw6LUgTO64GSY7Wqo2MlmaMIGLYux29M="
+    },
+    {
+      "name": "make",
+      "version": "4.4.1-3",
+      "file": "make-4.4.1-3-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/make-4.4.1-3-x86_64.pkg.tar.zst",
+      "sha256": "af0bdba17f06fe037f0194069adaa31a8fe45f1a11381501896aea1fae37bd5d",
+      "licenses": [
+        "GPL3"
+      ],
+      "dependencies": [
+        "libintl",
+        "sh"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmod380ACgkQ+hFTGqCqf1f3fg//WCiOymP6VaNS/AcsgTow6dV5nMea76uAcz9r4u0WqF1pvxyoxjH8sUzoP2YVJTJiE2/T+B2IQRaTRpYZYeKQagh00R/v1ufa0b8QQ0UHb/km2LyU9E6yuuO8RtXxmr+Eysbrz+baB0s3R6XtSG0RbsiI7HK80/LfZVNdX5UDVijELzAwQIoniW2ZwKlBzsEMIzBKOIC6sekyHy2YHrJ0ZApxHHxtGvPjKzSL8bFOLwD7c25FX323fHKGfoALYWixaDslIsQkldUdQOlrLpyCh1Oi7V67a1LNzA/wPaof3EU76N8JX1IFHbvOTKrxIglNVfDm5+HSQKUEEy3KEgsbLAcJBGoWtmDLok8mNTU1+BolERtglkmBeg489aSQ6osvZZhX9Zj03cPUXIqEBZt8Lep5dNTZ0gIX6qb2WfTQP4OtMpgEMVwVihzaK4IxeAV1Opi63roBgb4PsQQYhqUAamSSdGRngtvIINalI31vy6RVjpUPUrubK/WB3ceLmGEs/q+WE2KZO23FCr5/5OQ/diCV5sFQUzCQwo6Icv9CzPwlEQtYGM3sLm0RnyOTWgucq+1NhFRPIVF4FrmQLan4MVdf1vpRLL4dXRZLKcfMHEfPXvN9FzViscuDGh0KjwCUGtcTd8zyf/u732RXulTzNL7KpkSTl1s1ik6AetLE8Z8="
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-binutils",
+      "version": "2.47-3",
+      "file": "mingw-w64-ucrt-x86_64-binutils-2.47-3-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-binutils-2.47-3-any.pkg.tar.zst",
+      "sha256": "ba98af202fe71e0884bb51daf78ce10bd8a51c69528c700dcf5855e6ece06dd3",
+      "licenses": [
+        "spdx:GPL-3.0-or-later AND GPL-2.0-or-later AND LGPL-3.0-or-later AND LGPL-2.0-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-gettext-runtime",
+        "mingw-w64-ucrt-x86_64-libwinpthread",
+        "mingw-w64-ucrt-x86_64-zlib",
+        "mingw-w64-ucrt-x86_64-zstd"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-cc-libs",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-cc-libs-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-cc-libs-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "b05218ea8b8f2142d2042cd01843810f4cf9345af6e5e7fe39395590cd55b2dc",
+      "licenses": [
+        "spdx:GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-libatomic=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-libgcc=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-libstdc++=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-libquadmath=16.2.0-4"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-crt",
+      "version": "14.0.0.r426.g4564ee4b5-1",
+      "file": "mingw-w64-ucrt-x86_64-crt-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-crt-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "sha256": "5d1c1f2c3859e690181d9ebcada1640a6744ab8dd5643b4bdbc7fe258af95037",
+      "licenses": [
+        "spdx:ZPL-2.1"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-headers"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-gcc",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-gcc-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gcc-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "dfde2ee85df123a4afc43ac7bf8d4c379ddb919010c4b79a17db0862e030b2d1",
+      "licenses": [
+        "spdx:GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-binutils",
+        "mingw-w64-ucrt-x86_64-crt",
+        "mingw-w64-ucrt-x86_64-headers",
+        "mingw-w64-ucrt-x86_64-isl",
+        "mingw-w64-ucrt-x86_64-gmp",
+        "mingw-w64-ucrt-x86_64-mpfr",
+        "mingw-w64-ucrt-x86_64-mpc",
+        "mingw-w64-ucrt-x86_64-libgcc=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-libstdc++=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-windows-default-manifest",
+        "mingw-w64-ucrt-x86_64-winpthreads",
+        "mingw-w64-ucrt-x86_64-zlib",
+        "mingw-w64-ucrt-x86_64-zstd"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-gettext-runtime",
+      "version": "1.0-1",
+      "file": "mingw-w64-ucrt-x86_64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+      "sha256": "ba693dda4ac375af76ce481ff3a6e7481286546cc7dc6d56c7021dae34084157",
+      "licenses": [
+        "spdx:GPL-3.0-or-later AND LGPL-2.1-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-cc-libs",
+        "mingw-w64-ucrt-x86_64-libiconv"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-gmp",
+      "version": "6.3.0-2",
+      "file": "mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst",
+      "sha256": "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea",
+      "licenses": [
+        "LGPL3",
+        "GPL"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-headers",
+      "version": "14.0.0.r426.g4564ee4b5-1",
+      "file": "mingw-w64-ucrt-x86_64-headers-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-headers-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "sha256": "b81c19e278ba0fc9f6ad0326d4aef64aea93053a6272916fb4c07069ac0215d0",
+      "licenses": [
+        "spdx:ZPL-2.1 AND LGPL-2.1-or-later"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-isl",
+      "version": "0.28-1",
+      "file": "mingw-w64-ucrt-x86_64-isl-0.28-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-isl-0.28-1-any.pkg.tar.zst",
+      "sha256": "8594e01a253d5a72646c586cf5a1626c1b1c2be7c30060fe67abd9bebe3fe223",
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-gmp"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libatomic",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-libatomic-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libatomic-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "81d960422f47c9cff742aa5a6dd6c587ba39e5da64738d903730e79577479582",
+      "licenses": [
+        "spdx:GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-libwinpthread"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libgcc",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-libgcc-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libgcc-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "de65b4adae899d9278427402e29d03860bacba481794460f3a1d078610cbb783",
+      "licenses": [
+        "spdx:GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-libwinpthread"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libiconv",
+      "version": "1.19-1",
+      "file": "mingw-w64-ucrt-x86_64-libiconv-1.19-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libiconv-1.19-1-any.pkg.tar.zst",
+      "sha256": "9a500f38c2b91808741c62fae746b3e9110b33a1ecf5c30fa0c66dbedddf7e16",
+      "licenses": [
+        "spdx:LGPL-2.1-or-later",
+        "documentation:spdx:GPL-3.0-or-later"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libquadmath",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-libquadmath-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libquadmath-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "75960aa837a7fc6dc8313afb11014bf7f42548ab6067498d0b561cc3c490b5b2",
+      "licenses": [
+        "spdx:LGPL-2.1-or-later AND GFDL-1.2-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-libgcc=16.2.0-4"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libstdc++",
+      "version": "16.2.0-4",
+      "file": "mingw-w64-ucrt-x86_64-libstdc++-16.2.0-4-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libstdc++-16.2.0-4-any.pkg.tar.zst",
+      "sha256": "2211dbbf1220287e49f5d66bb6cb09ee5a157901a485197553c9a940cc902d5b",
+      "licenses": [
+        "spdx:GPL-3.0-or-later WITH GCC-exception-3.1 AND GFDL-1.3-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-libgcc=16.2.0-4",
+        "mingw-w64-ucrt-x86_64-libwinpthread",
+        "mingw-w64-ucrt-x86_64-tzdata"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-libwinpthread",
+      "version": "14.0.0.r426.g4564ee4b5-1",
+      "file": "mingw-w64-ucrt-x86_64-libwinpthread-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libwinpthread-14.0.0.r426.g4564ee4b5-1-any.pkg.tar.zst",
+      "sha256": "f8de8153bbc0e47ba244a423c12c426fa1d9f56395117ecaa34c6ad6ebed6ca3",
+      "licenses": [
+        "spdx:MIT AND BSD-3-Clause-Clear"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-mpc",
+      "version": "1.4.1-1",
+      "file": "mingw-w64-ucrt-x86_64-mpc-1.4.1-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-mpc-1.4.1-1-any.pkg.tar.zst",
+      "sha256": "f06556e811c711ce91609484e31d358e4f495811ba29813bf2284a3b236d82ce",
+      "licenses": [
+        "spdx:LGPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-gmp",
+        "mingw-w64-ucrt-x86_64-mpfr"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-mpfr",
+      "version": "4.2.2-3",
+      "file": "mingw-w64-ucrt-x86_64-mpfr-4.2.2-3-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-mpfr-4.2.2-3-any.pkg.tar.zst",
+      "sha256": "6b70a275d2ec75c70aa50a236c218e6b7ee9a5ab4c6d52cb0b580267b7d200fe",
+      "licenses": [
+        "spdx:LGPL-3.0-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-cc-libs",
+        "mingw-w64-ucrt-x86_64-gmp"
+      ],
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-pkgconf",
+      "version": "1~3.0.7-1",
+      "file": "mingw-w64-ucrt-x86_64-pkgconf-1~3.0.7-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-pkgconf-1~3.0.7-1-any.pkg.tar.zst",
+      "sha256": "74b6fe685d84ec6ea19b9ee285d752d122e31b6b93038f933627b05324d8f2a3",
+      "licenses": [
+        "spdx:ISC"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-tzdata",
+      "version": "2026e-1",
+      "file": "mingw-w64-ucrt-x86_64-tzdata-2026e-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-tzdata-2026e-1-any.pkg.tar.zst",
+      "sha256": "f1809089f8ed5cec858ae8584289172896eb921be1e78ba583555f74e9015428",
+      "licenses": [
+        "custom: public domain"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-windows-default-manifest",
+      "version": "20260815-1",
+      "file": "mingw-w64-ucrt-x86_64-windows-default-manifest-20260815-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-windows-default-manifest-20260815-1-any.pkg.tar.zst",
+      "sha256": "b39039f754a600cc0dec49df7d675a59a3cb2b63691d91b4ae60735ee7075eca",
+      "licenses": [
+        "custom:Public Domain"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-winpthreads-stub",
+      "version": "1.0.0-1",
+      "file": "mingw-w64-ucrt-x86_64-winpthreads-stub-1.0.0-1-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-winpthreads-stub-1.0.0-1-any.pkg.tar.zst",
+      "sha256": "ba9783196d7dbbdfdf7fe15470954c151f75b067d86c68b205f1e64d4458d7f5",
+      "licenses": [
+        "NONE"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-zlib-ng-compat",
+      "version": "2.3.3-2",
+      "file": "mingw-w64-ucrt-x86_64-zlib-ng-compat-2.3.3-2-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-zlib-ng-compat-2.3.3-2-any.pkg.tar.zst",
+      "sha256": "b3ca6b437fb154a0fa26652002cdda591498ee4a0e08d91cc653c3702d090f25",
+      "licenses": [
+        "spdx:Zlib"
+      ],
+      "dependencies": null,
+      "signature": null
+    },
+    {
+      "name": "mingw-w64-ucrt-x86_64-zstd",
+      "version": "1.5.7-2",
+      "file": "mingw-w64-ucrt-x86_64-zstd-1.5.7-2-any.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-zstd-1.5.7-2-any.pkg.tar.zst",
+      "sha256": "dbdb8427280046a2b41697780aa4c52983b708082b0da4755951dc3bea96ca89",
+      "licenses": [
+        "spdx:BSD-3-Clause OR GPL-2.0-or-later"
+      ],
+      "dependencies": [
+        "mingw-w64-ucrt-x86_64-cc-libs"
+      ],
+      "signature": null
+    },
+    {
+      "name": "patch",
+      "version": "2.8-2",
+      "file": "patch-2.8-2-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/patch-2.8-2-x86_64.pkg.tar.zst",
+      "sha256": "df34ebf345d607cabf0b2cbad60f562f775f07985647b84035b40702f62ee9b1",
+      "licenses": [
+        "spdx:GPL-3.0-or-later"
+      ],
+      "dependencies": null,
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmqyLEoACgkQ+hFTGqCqf1d8aw//RFoGd0o9eDIZ7oqLu9ymWsukLNAcbphUkfO9h2/YmbgAHpzEsPuQFIdlcx+h5l2PyNFrL3WcPES+BeifvtUwBRpXPH6yepO7D5bHz78cNcQ3OFpi+FnMEpOIPw/v6nzNnGoWNkjWUUC4EDnJC5vw/pEVbNDLERNTNfvK1Jde1MF3Gb5088lIJQyvVUX1hkaaQ4M3eTbwAh4HRmg+ID40IhLtMSOICKXlqLZjEl5jnQY0Whvtg2Jb7QXR9A7HeSRFmAnHfzxun2kPrHiv2qCg0EDBzL08uvM/u8LmzDpJxLjDJ+skr29SB+Doy+as3eSzPbCfs6o7nnnS3ENZFxNQK9taBqTRJRMAWtuMia5mzpxrppQoD6jy9yz1hQvZ90kVwwKydz5/OHEw7+sm+1R6C7UH90MRbWJU3Txa73t8XBySEmI/STSR9Q7K83pknm1AIWMqbXBNcev1OZsWePWN2GAs4n+ZCCnTmVs1oTcg78hBuYZ6PDMdV56itA6NfF9+tbMU/LDFLAAG1ejFpbh21ei8E+To/7Lwt6bfB5PyqQVfSVmOGRzVQcljwLDLLzO7NJUyVJh4ksTxx3V332pTLKbUK6VL2K6klbpPQxM9jXFyGcG/qGiIJuOqA2SPQ+OOgqdhpAARJZfnEBSI9WBA8aMZ9ggHIVVStsNuR4y/JxQ="
+    },
+    {
+      "name": "perl",
+      "version": "5.42.3-2",
+      "file": "perl-5.42.3-2-x86_64.pkg.tar.zst",
+      "url": "https://mirror.msys2.org/msys/x86_64/perl-5.42.3-2-x86_64.pkg.tar.zst",
+      "sha256": "d89eaa2b8d661fd2040b54092d718f57aa1c066ea2d63735989ee47cfa7c9ef2",
+      "licenses": [
+        "spdx:Artistic-1.0-Perl OR GPL-1.0-or-later"
+      ],
+      "dependencies": [
+        "db",
+        "gdbm",
+        "libxcrypt",
+        "coreutils",
+        "sh"
+      ],
+      "signature": "iQIzBAABCgAdFiEEX5RLAn9/4gkZhaou+hFTGqCqf1cFAmq2LSQACgkQ+hFTGqCqf1cR/w//ULQxJMAOa5OyJtgdVIBGXlZ8QXVHXvNwLIlmhZ58GuH1gKBAq6Lk7SFVsbJgyeiKJl7jNb7uXmbmqyrrRnurwBwNvTAOCf+MSPJwhSl6UTA22UC9nB1N0h7LsxtnADOtqcCCSHQsgFs0AuRxPq7ASIqOWPFbdoo188cMi68YZU64ydF6HJd4BdHk6JOjIqPieQjpynQcYxD3MoB8sWeHl0MDrQ55+nJvoSdog5RyrWBeGowM2teWNU30/bxiZ9XctJTlFQapierAiDraB6HfCbN4LT47rdyKZA1d68zMQS0wTITBCor1TqMK5Cd0KyaPmqVTg+XyzaZGJaETyK6sSy3rSVbA8sbPFCpf40Mojgoi9I08Xj1VjNghZ/IsQ4mHS7o8hXayE61pSAr6u0lneef1xGC2UtD3EFQQTAjdSj1LNG4V+lg8IiM6iHJzz9GwAWHaS7O7vd+Ntnzl0kM8lTTz3nCdM3xk/jkb/QWQRaCLhuGNNlVYKcjolE4+megbW94/xKonoYmiuvvxiAtSxjxvBDTHzjs9G9cq4PRe8p9AR11I0j3CxTmUkMkhmTbhxOyE7yAtsNx1K5pK5YguFglZwCwou/GJ+AgauPHfBsssyiF4BFgs0Y2RaA1Ltgi7Xmkefk489hrm4gN8sz6dwIljVM4T7RnIDdo2DXycFXM="
+    }
+  ],
+  "correspondingSource": [
+    {
+      "file": "mingw-w64-crt-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/sources/mingw-w64-crt-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "sha256": "8edb0c86c4fe776e6bda609149ef1b3bbbad772711796bd051c0d57318589d5c",
+      "role": "Corresponding compiler runtime / MinGW source; not executed"
+    },
+    {
+      "file": "mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/sources/mingw-w64-gcc-16.2.0-4.src.tar.zst",
+      "sha256": "a1792a44764405bc365746e0e60f0daa122076cec0dddd35a781d141f94273cf",
+      "role": "Corresponding compiler runtime / MinGW source; not executed"
+    },
+    {
+      "file": "mingw-w64-headers-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "url": "https://mirror.msys2.org/mingw/sources/mingw-w64-headers-14.0.0.r426.g4564ee4b5-1.src.tar.zst",
+      "sha256": "205f4aaf65442c4ae5cd199f519c353f472a5ca1786adf351d48f318c6c6b1e5",
+      "role": "Corresponding compiler runtime / MinGW source; not executed"
+    }
+  ]
+}

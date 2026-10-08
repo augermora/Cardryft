@@ -74,6 +74,23 @@ Hardware validation is not ready. Do not connect or query an iPhone for this mil
 Apple drivers/USB support remain a separately installed official prerequisite;
 Cardryft bundles no Apple DLLs and performs no pairing or Wallet integration.
 
+## Milestone 4D: pinned native build pipeline
+
+[Native build scripts and instructions](native-build/README.md) now lock upstream
+source revisions, project patches and one repository-local UCRT64 compiler/toolchain.
+They build into separate ignored staging trees, inspect PE imports/exports and compare
+DLL bytes. Results and remaining gates are recorded in the
+[native evidence manifest](docs/research/native-dependency-manifest.md).
+Clean builds E/F produced six byte-identical x64 DLLs; both static dependency/export
+audits passed. Each native build has six upstream warnings and no errors. Cardryft's
+Release build has no warnings/errors and all 149 automated tests pass.
+
+This work does not enable device communication or change the application. There is
+no real P/Invoke or production loader manifest, no DLL promotion, and no hardware
+validation. Upstream TLS/trust behavior and native operation bounds still require
+review before any device milestone. Matching source/notice material is staged locally;
+Cardryft remains MIT and bundles no proprietary Apple components.
+
 ## Project format and sources
 
 `.cardryft` files are readable JSON, format **version 1**:

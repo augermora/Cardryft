@@ -1,0 +1,12 @@
+--- a/src/idevice.h
++++ b/src/idevice.h
+@@ -40,7 +40,8 @@
+ #ifdef LIBIMOBILEDEVICE_STATIC
+   #define LIBIMOBILEDEVICE_API
+ #elif defined(_WIN32)
+-  #define LIBIMOBILEDEVICE_API __declspec( dllexport )
++  /* Cardryft: the explicit .def export list owns the Windows DLL surface. */
++  #define LIBIMOBILEDEVICE_API
+ #else
+   #if __GNUC__ >= 4
+     #define LIBIMOBILEDEVICE_API __attribute__((visibility("default")))

@@ -1,0 +1,65 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ AUTOMAKE_OPTIONS = foreign
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = 3rd_party common src include $(CYTHON_SUB) tools docs
++SUBDIRS = common src include
+ 
+ EXTRA_DIST = \
+ 	README.md \
+--- a/configure.ac
++++ b/configure.ac
+@@ -44,7 +44,6 @@ LT_INIT
+ PKG_CHECK_MODULES(libusbmuxd, libusbmuxd-2.0 >= $LIBUSBMUXD_VERSION)
+ PKG_CHECK_MODULES(libplist, libplist-2.0 >= $LIBPLIST_VERSION)
+ PKG_CHECK_MODULES(limd_glue, libimobiledevice-glue-1.0 >= $LIMD_GLUE_VERSION)
+-PKG_CHECK_MODULES(libtatsu, libtatsu-1.0 >= $LIBTATSU_VERSION)
+ AC_ARG_WITH([readline],
+             [AS_HELP_STRING([--without-readline],
+             [build without support for libreadline (default is yes)])],
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -26,6 +26,7 @@ if HAVE_WIRELESS_PAIRING
+ libimobiledevice_1_0_la_LIBADD += $(top_builddir)/3rd_party/ed25519/libed25519.la $(top_builddir)/3rd_party/libsrp6a-sha512/libsrp6a-sha512.la
+ endif
+ libimobiledevice_1_0_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(LIBIMOBILEDEVICE_SO_VERSION) -no-undefined
++libimobiledevice_1_0_la_LDFLAGS += -export-symbols $(top_srcdir)/cardryft.exports
+ if DARWIN
+ libimobiledevice_1_0_la_LDFLAGS += -framework CoreFoundation -framework SystemConfiguration
+ endif
+@@ -33,33 +34,7 @@ libimobiledevice_1_0_la_SOURCES = \
+ 	idevice.c idevice.h \
+ 	service.c service.h \
+ 	property_list_service.c property_list_service.h \
+-	device_link_service.c device_link_service.h \
+-	lockdown.c lockdown.h \
+-	lockdown-cu.c \
+-	afc.c afc.h \
+-	file_relay.c file_relay.h \
+-	notification_proxy.c notification_proxy.h \
+-	installation_proxy.c installation_proxy.h \
+-	sbservices.c sbservices.h \
+-	mobile_image_mounter.c mobile_image_mounter.h \
+-	screenshotr.c screenshotr.h \
+-	mobilesync.c mobilesync.h \
+-	mobilebackup.c mobilebackup.h \
+-	house_arrest.c house_arrest.h \
+-	mobilebackup2.c mobilebackup2.h \
+-	misagent.c misagent.h \
+-	restore.c restore.h \
+-	diagnostics_relay.c diagnostics_relay.h \
+-	heartbeat.c heartbeat.h \
+-	debugserver.c debugserver.h \
+-	webinspector.c webinspector.h \
+-	mobileactivation.c mobileactivation.h \
+-	preboard.c preboard.h  \
+-	companion_proxy.c companion_proxy.h \
+-	reverse_proxy.c reverse_proxy.h \
+-	syslog_relay.c syslog_relay.h \
+-	ostrace.c ostrace.h \
+-	bt_packet_logger.c bt_packet_logger.h
++	lockdown.c lockdown.h
+ 
+ if WIN32
+ libimobiledevice_1_0_la_LDFLAGS += -avoid-version -static-libgcc

@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve native recipes and hash-pinned patch bytes across Windows checkouts.
+native-build/** text eol=lf

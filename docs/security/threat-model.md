@@ -122,6 +122,47 @@ enabled. Do not abandon blocked native work or free modules/handles while it run
 Actual ABI/SafeHandle/error-code/deadline tests remain deferred under the explicit
 stop condition. No hardware validation or Wallet access takes place in 4C.
 
+## Milestone 4D build and supply-chain boundary
+
+Hash-pinned official source/toolchain archives are acquired under ignored
+`.local/native-build`; the build runner has a controlled PATH and isolated
+HOME/AppData/temp state. Offline builds execute compilers and source build scripts,
+not device utilities. No package install hooks, global installation, administrator
+privileges, application network communication or device calls are introduced.
+Publisher HTTPS/hashes are bootstrap trust, not independently verified signatures
+or a bootstrapped compiler. A compromised publisher/compiler remains a supply-chain
+risk. Updating a pin requires review; unavailable/mismatched inputs fail closed.
+
+OpenSSL's selected configuration removes configuration autoload, DSO modules, engines,
+legacy modules and compression, including dynamic zlib; its socket BIOs are excluded.
+The default provider is built in. This confines the selected initialization path,
+not every possible public API in a general-purpose crypto library. Do not bind explicit
+config/file/store/provider APIs. OPENSSL_CONF, OPENSSL_CONF_INCLUDE, OPENSSL_MODULES and
+OPENSSL_ENGINES must not select
+external files/modules through the approved path. Other environment controls (CPU
+capabilities, diagnostics, certificate paths and transport overrides) still require
+the future backend to use explicit options and reject unsafe overrides.
+The MinGW RNG patch uses BCrypt's system-preferred OS RNG instead of registry-selected
+legacy CryptoAPI providers; the build targets Windows 10 or later and links OS bcrypt.
+This removes that provider-selection path without replacing OS entropy with a test RNG.
+
+Static inspection requires an exact AMD64 file set, closed normal imports, no delay
+imports and a narrow root export list. Hash equality from independent clean builds
+is evidence for those outputs, not proof of memory safety, ABI or device compatibility.
+No DLLs are copied to the application or loaded for discovery. Windows system
+dependencies must later resolve through System32, never be collected from this machine.
+Native CRT compatibility/dynamic resolution needs separate call-graph review.
+
+The pinned libimobiledevice source explicitly sets TLS security level zero and disables
+peer verification in its connection setup. The build does not add this behavior or
+approve it: protocol authentication and existing-trust semantics must be reviewed
+before use. Non-handshake construction performs extra reads; advertised frame sizes
+and subsequent receives remain unbounded. Root export reduction does not enforce
+USB-only arguments, four-key metadata or safe trust operations by itself. These
+facts keep production interop and hardware use blocked. See the
+[measured native gates](../research/native-dependency-manifest.md) and
+[license/rebuild requirements](../../THIRD-PARTY-NOTICES.md).
+
 Keep Windows/.NET patched; native codec vulnerabilities are not eliminated by
 format/resource checks. Initial decoding can hold multiple bounded pixel buffers;
 large images consume memory and GDI+ work may take time. UI decoding/preview is async,

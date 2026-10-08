@@ -1,0 +1,12 @@
+--- a/util/mkbuildinf.pl
++++ b/util/mkbuildinf.pl
+@@ -11,6 +11,9 @@
+ 
+ my $platform = pop @ARGV;
+ my $cflags = join(' ', @ARGV);
++# Cardryft: canonicalize only build-root remapping flags in informational text.
++# Actual compiler flags remain unchanged and are retained in the build log.
++$cflags =~ s{-f(file|debug|macro)-prefix-map=\S+=/cardryft-build}{-f$1-prefix-map=<build-root>=/cardryft-build}g;
+ $cflags =~ s(\\)(\\\\)g;
+ $cflags = "compiler: $cflags";
+ 

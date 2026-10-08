@@ -1,0 +1,13 @@
+--- a/providers/implementations/rands/seeding/rand_win.c
++++ b/providers/implementations/rands/seeding/rand_win.c
+@@ -21,8 +21,8 @@
+ 
+ #include <windows.h>
+ /* On Windows Vista or higher use BCrypt instead of the legacy CryptoAPI */
+-#if defined(_MSC_VER) && _MSC_VER > 1500 /* 1500 = Visual Studio 2008 */ \
+-    && defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0600
++/* Cardryft (2026-10-07): use the system-preferred RNG with MinGW too. */
++#if defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0600
+ #define USE_BCRYPTGENRANDOM
+ #endif
+ 

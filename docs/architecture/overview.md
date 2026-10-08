@@ -151,6 +151,23 @@ The preview can briefly show an older accepted frame while a newer request rende
 a stale completion can never replace the current frame. No image cache, DI container,
 service hierarchy, background autosave, layers, or persistence of undo history.
 
+## Milestone 4D build boundary
+
+The [native pipeline](../../native-build/README.md) belongs to development tooling,
+outside Core/App/Device production dependencies. It locks source/tool archives, applies
+hashed build patches, stages an x64 UCRT DLL graph and compares independent clean
+builds. Source/license packaging and PE evidence stay in ignored `.local/native-build`;
+reviewable recipes, locks and measured evidence are tracked. No application behavior,
+project reference or managed package changes are made.
+
+NativeLibraryLoader still fails closed without loading anything. Build audit JSON is
+explicitly not a production loader allowlist. Real interop, trusted-session semantics,
+resource bounds, race-resistant loading and ABI/lifetime tests remain later gates.
+Only the root library's reviewed discovery/lockdown symbol subset is exported; this
+does not make its generic native metadata APIs safe to expose directly to the UI.
+See [native evidence](../research/native-dependency-manifest.md) and
+[licenses](../../THIRD-PARTY-NOTICES.md).
+
 ## Packages, tests, and limitations
 
 No Milestone 3 packages were added. Imaging uses System.Drawing.Common 10.0.12
@@ -160,8 +177,9 @@ use net10.0-windows; Core/Storage/inactive projects remain net10.0. Tests exerci
 round-trip/version/malformed storage, missing source, history/dirty state, recent
 trimming, drop validation, controlled stale/canceled renders, and existing pixel/export
 behavior. Device tests use fakes only; no runtime device/Wallet communication or
-networking implementation exists. Native dependencies/versions and iOS 27 support
-remain unvalidated; see the research document's 4B gates.
+networking implementation exists. The native build's source/tool versions are pinned
+and inspected; native ABI/device compatibility and iOS 27 support remain unvalidated.
+See the research document's 4B gates.
 
 Native decoding is not sandboxed. Large sources can consume substantial bounded
 memory; initial decoding temporarily holds old/new/native pixel buffers. Export/save
