@@ -1,4 +1,202 @@
-# Native runtime safety: Milestone 4F and historical 4E audit
+# Native runtime safety: Milestone 4G promotion review
+
+## Milestone 4G disposition (2026-10-08)
+
+**STOP: the 4F candidate is unpromoted and is not ready for hardware validation.**
+The three remaining gates have not passed. This review establishes a stop decision,
+not a completed runtime hardening implementation. No native source, compiled pins,
+production loader, application behavior or dependency changed. The existing 4F
+artifacts were reverified instead of rebuilt. All prior evidence remains intact.
+The [4G results](../../native-build/evidence/milestone4g-results.json) record the
+executed validation separately from the unimplemented safety requirements below.
+
+### Loopback identity investigation and required policy
+
+The only permitted future destination remains **127.0.0.1:27015**. Port number,
+process basename, a publisher display string, a directory name, or a coherent
+pairing/TLS response alone must never grant authority. No listener/process/service
+on this machine was inspected or contacted during this review.
+
+Supported Windows APIs provide useful evidence without requesting elevation:
+
+| Evidence | Supported API and limitation |
+| --- | --- |
+| Endpoint owner | GetExtendedTcpTable with AF_INET/TCP_TABLE_OWNER_PID_ALL returns addresses, states and owning PIDs. A listener row is a snapshot, not an authenticated peer credential attached to Cardryft's socket. |
+| Process image | OpenProcess with PROCESS_QUERY_LIMITED_INFORMATION, then QueryFullProcessImageNameW. Keep the process handle and creation identity; failure must reject, not request SeDebugPrivilege. |
+| Architecture | IsWow64Process2 on the held process handle; reconcile with the opened executable's PE machine and an explicitly reviewed installation profile. |
+| Service | OpenSCManager(SC_MANAGER_CONNECT), OpenService(SERVICE_QUERY_STATUS/QUERY_CONFIG), QueryServiceStatusEx. Require a running approved service whose PID agrees with socket evidence; never start, stop or configure it. |
+| File/signature | Hold a read-only executable handle, check normalized protected local installation path, ancestors/reparse status/ACL, then WinVerifyTrust with WTD_UI_NONE and WTD_CACHE_ONLY_URL_RETRIEVAL. Validate the signer against a reviewed Apple certificate/publisher policy, not just a subject string. |
+
+Microsoft documents these [TCP tables](https://learn.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getextendedtcptable),
+[PID rows](https://learn.microsoft.com/en-us/windows/win32/api/tcpmib/ns-tcpmib-mib_tcprow_owner_pid),
+[process image rights](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-queryfullprocessimagenamew),
+[architecture queries](https://learn.microsoft.com/en-us/windows/win32/api/wow64apiset/nf-wow64apiset-iswow64process2),
+and [service access](https://learn.microsoft.com/en-us/windows/win32/services/service-security-and-access-rights).
+Default service permissions can permit ordinary local users to query status/config;
+actual service/process DACLs can differ. A pending/stopped service's PID cannot be
+treated as valid running-service evidence. [Service status semantics](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-queryservicestatusex).
+
+An implementation would have to correlate the established **server-side reverse
+four-tuple** to the held process/service before sending even ListDevices, and check
+again on every new connection. An earlier LISTEN PID check has a replacement race.
+This is an engineering design requirement, not a claim that table snapshots provide
+atomic peer authentication. Socket duplication, process compromise and privileged
+host compromise remain outside such an executable-signature guarantee.
+
+Offline signature verification must not fetch CRLs, certificates or URLs. Only
+WinVerifyTrust success is acceptable; cached revocation policy and unavailable/stale
+evidence need an explicit fail-closed decision. Cache-only verification cannot prove
+fresh revocation status. [WinVerifyTrust](https://learn.microsoft.com/en-us/windows/win32/api/wintrust/nf-wintrust-winverifytrust),
+[offline/no-UI flags](https://learn.microsoft.com/en-us/windows/win32/api/wintrust/ns-wintrust-wintrust_data).
+
+No verified Apple installation/signer profile or socket-bound observer exists in
+Cardryft. The traditional Apple Mobile Device service installation and Store Apple
+Devices installation must not be assumed equivalent. Accepting arbitrary Apple-signed
+executables or inferring identity from a familiar path would weaken this gate.
+Normal-user feasibility is plausible from Windows documentation, **not proven for
+an Apple installation here**. Denied, missing, changed or ambiguous evidence must
+reject before protocol output. No proposed check was wired into the unsafe candidate.
+
+### Pairing-record provenance: decisive unresolved boundary
+
+Exact reviewed sources are the committed shim and the pinned protocol references:
+libimobiledevice 1.4.0 commit 149f7623c672c1fa73122c7119a12bfc0012f2ac,
+common/userpref.c (userpref_read_pair_record), and libusbmuxd 2.1.1 commit
+adf9c22b9010490e4b55eaeb14731991db1c172c, src/libusbmuxd.c
+(usbmuxd_read_pair_record). These references are not compiled into the 4F runtime.
+
+The shim's cardryft_open_existing_trust sends ReadPairRecord with an enumerated USB
+identifier and consumes PairRecordData from the loopback provider. Its actual input
+is **provider-supplied bytes**, not a read-only file handle to an independently verified
+record. The pinned userpref_get_config_dir computes CommonApplicationData/Apple/Lockdown
+(normally %ProgramData%\Apple\Lockdown), but its record-read function delegates to
+usbmux. That directory calculation does **not** establish where Apple's provider
+obtained a returned record, its age, owner, ACL or reparse status.
+
+| Property | Current evidence / enforced boundary |
+| --- | --- |
+| Provider/location | Unauthenticated fixed-loopback provider. Conventional ProgramData location is a source reference, not a verified Apple storage contract. |
+| File ownership/ACL/reparse | Not returned in the protocol; no record file or directory handle is opened or validated by Cardryft. These properties are unknown. |
+| Formats | Explicit XML or bplist00, dictionary root; no JSON/OpenStep fallback. |
+| Sizes | Outer mux frame <=65536 bytes including 16-byte header; embedded record nonempty and <=65536 bytes; certificate/private-key PEM <=16384 bytes. Limits are not provenance. |
+| Values/trust | HostID/BUID restricted to 1–128 ASCII letters/digits/hyphen; typed cert/key fields; normal TLS verification and exact DeviceCertificate match against the same supplied record. |
+| Writes | Shim has no save/delete/pair/unpair or record filesystem surface. Provider-internal behavior, including ReadBUID initialization, is not proven by client source. |
+| Redirect/substitution | Record fields do not select another TCP endpoint or metadata key, but an attacker can supply its own coherent root/private key/device certificate and defeat the intended trust authority. |
+| Persistence | Record bytes remain transient native memory; no copy into application storage, managed project, recent list or log. |
+
+The client's read-shaped request is insufficient proof of an **already-existing,
+protected** record. A signature on the service executable would identify its publisher,
+not attest record origin or immutable provider behavior. Apple's
+[trust documentation](https://support.apple.com/en-gb/109054) describes user trust,
+not an authenticated ReadPairRecord provenance/ACL contract.
+
+Required before implementation: either a reviewed provider assurance for existing-only
+record reads with verifiable provenance, or a narrowly supported independent read-only
+record source with held file/ancestor handles, protected owner/DACL, no reparse
+substitution, bounded length checked before reading, and no fallback to unverified
+provider records. Direct reading must never create, repair, update, copy or delete
+records. Unknown installations or inaccessible protected records must remain unavailable.
+No real record was inspected to fill these gaps. **This gate is not passed.**
+
+### Password prompt audit
+
+The sole reachable Cardryft private-key decoder is authenticate_tls in
+native-build/shim/cardryft_device.c:296: PEM_read_bio_PrivateKey(key_bio,NULL,NULL,NULL).
+The pinned OpenSSL crypto/pem/pem_lib.c:36 PEM_def_callback calls
+EVP_read_pw_string_min at line 62 when userdata is NULL; encryption/decryption
+fallbacks are also visible at lines 372/467. OpenSSL's
+[PEM documentation](https://docs.openssl.org/3.6/man3/PEM_read_bio_PrivateKey/)
+confirms the default prompting behavior. A socket deadline does not bound this call.
+
+**No fix or encrypted-key execution is claimed in this stopped review.** Future
+hardening must reject encrypted PKCS#8 and traditional encrypted PEM before costly
+decryption, supply an explicit callback that returns failure without UI/stdin or
+fallback, bound accepted unencrypted key types/sizes, and map failure to NotTrusted.
+Native fixtures must cover both encrypted encodings and valid unencrypted material,
+with an isolated test-process deadline and explicit proof that no password callback
+or prompt/input path is reached. Closing stdin alone is not a fix. Any native change
+requires new source locks, hashes, two fresh clean builds and LGPL replacement runs.
+
+### Memory / crypto / lifecycle findings
+
+The 4F per-input limits below are reverified source facts, not a total native heap
+ceiling. Raw mux length is checked before subtracting its 16-byte header or malloc;
+lockdown lengths are checked before allocation. Caller-owned managed buffers are
+fixed at 4352 and 1025 bytes; context/session structures are fixed-size. I/O scratch
+chunks are 16384 bytes, and pending BIO limits are 65536 bytes.
+
+libplist XML input is <=64 KiB, depth <=16 and nodes <=1024. Binary input/object count/
+reference widths/expanded nodes are bounded. Binary scalar limits (128 KiB each,
+1 MiB aggregate) are checked **after parse_bin_node allocates the scalar**, so
+they are acceptance limits, not a strict preallocation quota. Wire-range checks
+bound ordinary string/data payloads and UTF-16 conversion scratch, but complete
+node/container/serializer/OOM and overflow accounting has not been established.
+Outer reply and embedded record trees can coexist. TLS can hold decoded X509/key
+objects, chains, trust-store entries, algorithm contexts, BIO capacity and library
+initialization allocations at once. A 16 KiB PEM/list limit does not bound all of
+those allocations. No aggregate allocator quota exists.
+
+OpenSSL calls PEM/X509 parsing, SSL_CTX setup/key matching, SSL_do_handshake,
+SSL_read_ex/write_ex and certificate/signature verification synchronously. Security
+level 2 is a minimum-strength policy, not a maximum key-complexity or CPU budget.
+Byte limits alone do not preempt expensive cryptography. No preemptive native CPU
+ceiling or enforced key/chain complexity profile is implemented. No cryptographic
+downgrade is acceptable as a resource fix.
+
+| Lifecycle | Implemented 4F behavior / remaining gap |
+| --- | --- |
+| Endpoint/enumeration | Absolute monotonic 5 s enumeration budget, including local connect/request; device connects use remaining device budget, not a separate universal 5 s connect cap. |
+| Session/metadata | One absolute 10 s device budget for bootstrap/handshake/all four queries, additionally limited by refresh. Parsing/crypto can overrun between deadline checks. |
+| Refresh | Absolute 30 s context deadline; no isolated production worker to preempt native calls. |
+| Cancellation/stale UI | Existing fake-backed orchestration suppresses stale results and releases managed owners; this does not interrupt a blocked native thread. |
+| Cleanup | Local SSL/CTX/BIO/plist/socket/context release only; no StopSession, SSL_shutdown or protocol I/O. No numerical cleanup deadline is enforced. |
+| Ownership | SafeHandle reference retention and parent ownership prevent release during in-flight work and duplicate releases in existing tests; they do not bound free duration. |
+
+A possible further design is a **Cardryft-owned isolated worker** with bounded IPC,
+Windows job memory/CPU limits, a supervisor wall-clock deadline, stale-result fencing
+and process-owned native handles. [Windows job objects](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects)
+support process resource controls. This is a proposal, not implemented containment or
+a proven shutdown guarantee. It must not kill native threads in the UI process,
+modify Apple services or treat measurements as worst-case proofs. OOM, blocked crypto,
+cancellation and worker shutdown need synthetic fault tests before promotion.
+
+### Executed validation versus missing acceptance tests
+
+Existing .NET tests retain loader/pin/hash/PE negatives, inactive production policy,
+timeouts/error mapping, cancellation/stale results and SafeHandle release behavior.
+One additional integration regression verifies that a synthetic bundle accepted by
+hash/PE validation still cannot enable production discovery. It never loads a DLL.
+Both preserved native fixture executables passed 43/43 memory-only assertions again.
+Those cover framing/plist size/depth/count, encoding, expired socket deadline and
+synthetic TLS trust; **they do not test encrypted record decoding or resource ceilings**.
+
+Final `.\scripts\validate.ps1` executed `dotnet restore`, `dotnet build -c Release`
+and `dotnet test -c Release`: **0 build warnings, 0 errors; 185 total / 185 passed /
+0 failed / 0 skipped**. All 184 prior tests remain, with one new promotion regression.
+An initial restricted restore exited 1 without diagnostic output; a complete authorized
+run passed 184/184 before the new test, and the final complete run passed 185/185.
+No failing test was retried. Logs remain under ignored .local/milestone4g-validation*.log.
+
+Wrong process/path/signature/signer and a positive synthetic Apple identity policy,
+protected-record provenance, encrypted-key nonprompt, comprehensive integer-overflow/
+allocation accounting, real native connect/session/crypto/refresh and hard cleanup
+deadlines remain **unimplemented acceptance coverage**. No skipped/passing placeholders
+or weakened assertions were added. Existing fixture success is not gate success.
+
+The exact eight DLL instances in 4F-C/D were freshly SHA-256/PE inspected and their
+four output pairs compared byte-for-byte. Frozen inputs, five source archive pins,
+142 corresponding-source material hashes, LICENSE and modified LGPL library/evidence
+were checked without altering prior output. There was no fresh native compilation or
+replacement application rebuild; native source did not change. New evidence is under
+.local/native-build/reverification/4G-audit. The preserved source package is a historical
+4F package and does not include this later stopped review; it is not release approval.
+
+Production NativeLibraryLoader remains preflight-only, normal discovery retains
+UnvalidatedNativeBackend, HardenedRuntimeManifest.PromotionApproved remains false,
+and native/win-x64 remains absent. Prefer future native releases as separately
+versioned binaries **with matching source/notices**, rather than Git-tracked DLLs.
+No binaries are promoted or published. No Apple protocol, pairing record or hardware
+was accessed, and no service or device was modified.
 
 ## Milestone 4F disposition (2026-10-08)
 

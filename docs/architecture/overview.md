@@ -4,6 +4,13 @@ Cardryft is a modular .NET 10 Windows x64 application. Milestone 3 adds local
 projects, state history, and responsive preview work to the offline editor.
 The asInvoker application uses the installed Windows Desktop runtime.
 
+Milestone 4G is a [stopped promotion review](../research/native-runtime-safety.md#milestone-4g-disposition-2026-10-08).
+No production composition, native source, interop or package changed. Service identity
+would be a separate pre-protocol trust boundary from DLL identity; its observer and
+protected pairing-record provenance are not implemented. Crypto/memory/cleanup
+containment and nonprompt key decoding remain prerequisites. Normal discovery stays
+inactive and the compiled promotion flag remains false; no hardware use is authorized.
+
 ## Dependency direction
 
 App references Core, Imaging, Storage, Device, and Wallet. Imaging and Storage

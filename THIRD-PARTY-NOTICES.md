@@ -1,5 +1,22 @@
 # Third-party native dependency notices and compliance ledger
 
+## Milestone 4G stopped review
+
+No native source, dependency selection, package, license or binary changed. Existing
+4F-C/D artifacts, 142-file corresponding-source inventory and modified libplist/PE/
+replacement evidence were reverified without rebuilding or altering preserved material.
+The LGPL replacement application experiment remains a 4F result, not a new 4G run.
+The existing source packages predate the 4G gate findings and must not be presented
+as a current approved release bundle. LICENSE remains unchanged.
+
+The [4G safety decision](docs/research/native-runtime-safety.md#milestone-4g-disposition-2026-10-08)
+blocks promotion and hardware. Reproducibility/source availability does not establish
+listener/record trust, nonprompt key decoding, memory/CPU ceilings or bounded cleanup.
+Prefer eventual binaries as separately versioned release assets with matching source,
+full notices and recombination/installation instructions; do not track build DLLs in
+Git or publish this candidate. LGPL/Apache/compiler-runtime obligations and the review
+limitations below remain unchanged. No legal compliance guarantee is asserted.
+
 ## Milestone 4F candidate and source recombination
 
 The new staged selection compiles OpenSSL 3.6.5, libplist C/libcnary 2.7.0 and the

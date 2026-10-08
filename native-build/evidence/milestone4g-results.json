@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "milestone": "4G",
+  "date": "2026-10-08",
+  "status": "Stopped: required safety gates unproven",
+  "runtimePromoted": false,
+  "hardwareReady": false,
+  "productionBehaviorChanged": false,
+  "nativeSourceChanged": false,
+  "nativeChanges": [],
+  "freshNativeBuilds": 0,
+  "dependenciesAdded": [],
+  "deviceOperations": 0,
+  "appleProtocolOperations": 0,
+  "liveServiceObservations": 0,
+  "realPairingRecordsRead": 0,
+  "approvedFutureIpc": "127.0.0.1:27015 only; no alternative/remote/network-device/override",
+  "gates": [
+    {
+      "name": "Loopback identity",
+      "passed": false,
+      "status": "Windows-supported evidence researched; observer and reviewed Apple installation/signer profile not implemented",
+      "policy": "Before any protocol output require coherent socket four-tuple/held process/service/controlled image/offline signature/publisher/architecture evidence; reject missing/denied/changed evidence without elevation",
+      "assumptions": "Windows host/process and protected installation; snapshot correlation is not cryptographic TCP peer authentication; offline cache does not prove current revocation"
+    },
+    {
+      "name": "Existing pairing-record provenance",
+      "passed": false,
+      "status": "Provider returns bytes without file ownership/ACL/reparse/existence attestation",
+      "actualProvider": "ReadPairRecord/PairRecordData from fixed loopback endpoint",
+      "conventionalReferenceLocation": "%ProgramData%\\Apple\\Lockdown from pinned userpref_get_config_dir; not an attested Apple provider location",
+      "policy": "Existing-only protected provenance required; no create/update/delete/overwrite/copy/persist or unverified fallback",
+      "formats": [
+        "XML dictionary",
+        "bplist00 dictionary"
+      ],
+      "recordMaxBytes": 65536,
+      "provenanceAttributesVerified": false,
+      "prohibitedRecordWriteSurface": "No shim save/delete/pair/unpair/record-filesystem API; opaque vendor side effects unproven"
+    },
+    {
+      "name": "Noninteractive private-key decoding",
+      "passed": false,
+      "status": "Known unsafe NULL password callback retained in stopped candidate",
+      "source": "native-build/shim/cardryft_device.c:296",
+      "behavior": "PEM_read_bio_PrivateKey(NULL callback/userdata) permits OpenSSL PEM_def_callback -> EVP_read_pw_string_min",
+      "encryptedKeyPathExecuted": false,
+      "futureFix": "Reject encrypted encodings before decryption; explicit failure callback with no UI/stdin/fallback; expected unencrypted material and deterministic NotTrusted native fixtures"
+    },
+    {
+      "name": "Native memory / crypto CPU / cleanup",
+      "passed": false,
+      "status": "Per-input bounds exist; complete aggregate quota/preemptive CPU/hard cleanup bound not proven",
+      "globalHeapQuotaBytes": null,
+      "cryptoCpuDeadlineMs": null,
+      "shutdownCleanupDeadlineMs": null,
+      "isolationImplemented": false
+    }
+  ],
+  "limits": {
+    "enumerationEntries": 32,
+    "identifierAsciiBytes": 128,
+    "metadataUtf8Bytes": 1024,
+    "metadataUtf16Units": 256,
+    "managedDeviceBufferBytes": 4352,
+    "managedTextBufferBytes": 1025,
+    "protocolFrameBytes": 65536,
+    "muxHeaderIncludedBytes": 16,
+    "plistInputBytes": 65536,
+    "plistDepth": 16,
+    "plistNodesOrExpandedReferences": 1024,
+    "binaryScalarAcceptanceBytes": 131072,
+    "binaryAggregateScalarAcceptanceBytes": 1048576,
+    "scalarBudgetCheckedAfterAllocation": true,
+    "pemOrCertificateListBytes": 16384,
+    "pendingBioAcceptanceBytes": 65536,
+    "ioScratchBytes": 16384,
+    "totalNativeHeapBoundProven": false
+  },
+  "lifecycle": {
+    "enumerationIncludingConnectMs": 5000,
+    "deviceConnectSessionAllQueriesBudgetMs": 10000,
+    "totalRefreshMs": 30000,
+    "separateUniversalConnectTimeoutMs": null,
+    "preemptiveCryptoDeadline": false,
+    "cleanup": "Local SSL/CTX/BIO/plist/socket/context release; no protocol I/O; no enforced hard duration",
+    "cancellation": "Managed stale-result suppression/lifetime behavior tested; cannot interrupt C work",
+    "ownership": "Existing SafeHandle retained-parent/in-flight/single-release tests preserved"
+  },
+  "nativeReverification": {
+    "command": ".\\native-build\\reverify-4f.ps1 -Label 4G-audit",
+    "exitCode": 0,
+    "buildsReused": [
+      "4F-C",
+      "4F-D"
+    ],
+    "peInstancesInspected": 8,
+    "sha256InstancesMatched": 8,
+    "byteComparison": [
+      {
+        "file": "cardryft-device.dll",
+        "identical": true,
+        "sha256": "de3819264b2210ba2975984d22ea77a6e5e2f1d1b0b8a14fe1084cf2597427ae",
+        "size": 54226
+      },
+      {
+        "file": "libcrypto-3-x64.dll",
+        "identical": true,
+        "sha256": "e739523e963c313ad5f6c07275fe58ae5c8f2e3f8c2871096990b2cb14dfa2fd",
+        "size": 9031118
+      },
+      {
+        "file": "libplist-2.0.dll",
+        "identical": true,
+        "sha256": "f3624144540e9c6363e337e1be9a6e3ab64e0db5923071ce96bf1160bfc7ca67",
+        "size": 182898
+      },
+      {
+        "file": "libssl-3-x64.dll",
+        "identical": true,
+        "sha256": "9cf8cd67df7f3eddff3d145cb4513f9e9745d35974d147a1c8b3b0ae93cbef45",
+        "size": 1186777
+      }
+    ],
+    "frozenInputsVerified": true,
+    "pinnedUpstreamArchivesVerified": 5,
+    "sourcePackageFilesVerified": 142,
+    "sourcePackage": "Historical 4F-D package; preserved, not rebuilt or approved as a current release",
+    "licenseSha256": "14d3ec8e86d9d4706bac38951172f6009d8014e6e0507dc8702f890be1a2745a",
+    "nativeFixtures": [
+      {
+        "build": "4F-C",
+        "passed": 43,
+        "failed": 0,
+        "exitCode": 0,
+        "deviceOperations": 0
+      },
+      {
+        "build": "4F-D",
+        "passed": 43,
+        "failed": 0,
+        "exitCode": 0,
+        "deviceOperations": 0
+      }
+    ],
+    "nativeAssertionsPassed": 86,
+    "nativeAssertionsFailed": 0,
+    "nativeAssertionCases": 43,
+    "compilerInvoked": false,
+    "compilerWarnings": null,
+    "compilerErrors": null,
+    "historicalCompilerWarnings": "4F-C: 2; 4F-D: 2; original LGPL rebuild: 1 (not new 4G compiler results)",
+    "historicalCompilerErrors": 0,
+    "modifiedLibplistSha256": "67822bc843b6ef2925884d20567db41f1eb8dc8eb4416631de62450e53ac7fd8",
+    "modifiedLibplistPEVerified": true,
+    "savedReplacementResultsConsistencyVerified": true,
+    "replacementApplicationProbesRerun": false,
+    "auditPath": ".local/native-build/reverification/4G-audit/results.json",
+    "auditSha256": "35982d34fa3dee98b542e3b37f1e5c759ce2444f5baf1a4fd06239a11b533205"
+  },
+  "loader": {
+    "normalBackend": "UnvalidatedNativeBackend",
+    "productionLoader": "NativeLibraryLoader remains preflight-only",
+    "compiledPinsChanged": false,
+    "PromotionApproved": false,
+    "runtimeDirectoryPresent": false
+  },
+  "managedValidation": {
+    "command": ".\\scripts\\validate.ps1",
+    "commands": [
+      "dotnet restore",
+      "dotnet build -c Release",
+      "dotnet test -c Release"
+    ],
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0,
+    "total": 185,
+    "passed": 185,
+    "failed": 0,
+    "skipped": 0,
+    "testsPreserved": 184,
+    "testsAdded": 1,
+    "parallelismChanged": false,
+    "log": ".local/milestone4g-validation-final.log",
+    "logSha256": "dd7b8f8e22e2095fb50a48c630a97b1ee234c6674b61bc669188a313c9d4b0ca",
+    "initialRestrictedAttempt": "dotnet restore exited 1 with no diagnostic output; build/test did not start; log was not created. Subsequent authorized execution completed the full script.",
+    "intermediateCompleteRun": {
+      "log": ".local/milestone4g-validation.log",
+      "warnings": 0,
+      "errors": 0,
+      "total": 184,
+      "passed": 184,
+      "failed": 0,
+      "skipped": 0,
+      "purpose": "Before adding the synthetic promotion regression"
+    }
+  },
+  "newTest": "ValidatedSyntheticBundle_DoesNotApproveProductionDiscovery: accepted synthetic PE/hash identity never enables production; no DLL or socket opened",
+  "unmetAcceptanceCoverage": [
+    "Wrong/correct synthetic process/service/path/signature/signer policy",
+    "Protected record ownership/ACL/reparse/provenance",
+    "Encrypted PKCS#8/traditional PEM nonprompt decoding",
+    "Complete integer-overflow and allocator accounting",
+    "Native crypto/connect/session/total-refresh/cleanup ceilings"
+  ],
+  "checks": {
+    "gitDiffCheckPassed": true,
+    "projectAndPackageReferencesUnchanged": true,
+    "licensePreserved": true,
+    "productionAndNativeInputsUnchanged": true,
+    "noRuntimePromotion": true
+  },
+  "filesChanged": [
+    "AGENTS.md",
+    "README.md",
+    "THIRD-PARTY-NOTICES.md",
+    "docs/architecture/overview.md",
+    "docs/research/native-dependency-manifest.md",
+    "docs/research/native-runtime-safety.md",
+    "docs/research/windows-ios-device-access.md",
+    "docs/security/threat-model.md",
+    "native-build/evidence/milestone4g-results.json",
+    "native-build/reverify-4f.ps1",
+    "tests/Cardryft.Tests/HardenedNativeRuntimeTests.cs"
+  ],
+  "ignoredNewEvidence": [
+    ".local/native-build/reverification/4G-audit/results.json and source-owned fixture copies/results",
+    ".local/milestone4g-validation.log",
+    ".local/milestone4g-validation-final.log"
+  ],
+  "nextPrerequisites": [
+    "Reviewed Apple installation/signer and socket-bound observer policy with synthetic races/denied-access tests",
+    "Independently protected existing-only record source or provider provenance assurance; no unverified fallback",
+    "Noninteractive encrypted-key rejection and bounded accepted key/chain profile",
+    "Preallocation quotas plus tested native CPU/shutdown containment",
+    "Two new clean builds/hashes/audits/replacement validation after native fixes; fresh matching source package"
+  ],
+  "gitHistoryModified": false,
+  "committed": false,
+  "pushed": false
+}

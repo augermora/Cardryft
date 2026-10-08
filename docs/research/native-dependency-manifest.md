@@ -1,5 +1,30 @@
 # Native dependency evidence and reproducible build pipeline
 
+## Milestone 4G reverification and stop (2026-10-08)
+
+The [4G safety review](native-runtime-safety.md#milestone-4g-disposition-2026-10-08)
+does not approve the candidate. Listener/record authority, default encrypted-key
+prompting and full memory/CPU/cleanup ceilings remain unmet. Production loader and
+compiled manifest are unchanged; native/win-x64 remains absent. No package was added.
+
+`native-build/reverify-4f.ps1 -Label 4G-audit` rehashed and independently inspected all
+eight 4F-C/D DLL instances against committed evidence, compared the four output pairs
+byte-for-byte, checked frozen build inputs/current native sources and five archives,
+and verified all 142 preserved corresponding-source material hashes. The four hashes
+in the 4F table below remain exact, staged hashes, never an approval allowlist.
+Both saved source-owned native fixtures passed 43/43 again, with no device/socket calls.
+Modified libplist hash/imports/exports and historical LGPL probe results were reverified;
+the replacement application was not rebuilt or rerun. No native compilation occurred,
+so historical compiler warning counts below are not fresh 4G compiler results.
+
+[4G evidence](../../native-build/evidence/milestone4g-results.json) records commands
+and counts. Detailed fresh PE reports remain in ignored
+.local/native-build/reverification/4G-audit/results.json. All original builds/audits/
+source packages were preserved. Future native changes require new locked sources,
+two fresh clean builds and all replacement gates; no modified DLL may use these pins.
+Distribute eventual approved binaries as release artifacts with matching corresponding
+source/notices, rather than Git-tracked build outputs. No redistribution occurs here.
+
 ## Milestone 4F candidate (2026-10-08)
 
 The new selection has four DLLs: cardryft-device.dll (MIT narrow C boundary),

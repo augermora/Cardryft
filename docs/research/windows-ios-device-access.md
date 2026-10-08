@@ -1,5 +1,27 @@
 # Windows ↔ iPhone device access research
 
+## Milestone 4G promotion decision (2026-10-08)
+
+**STOP; hardware readiness is No.** The [detailed review](native-runtime-safety.md#milestone-4g-disposition-2026-10-08)
+investigates supported Windows TCP owner tables, held process image/architecture,
+SCM service identity and offline Authenticode checks. Normal-user access is plausible
+under default Windows ACLs but has not been established for an Apple installation.
+No live Apple process/service/socket was inspected and no protocol data was sent.
+
+These checks must precede protocol output and correlate the actual connection, not
+just an earlier listener PID. Installation/signer profiles, record provider provenance,
+noninteractive key parsing and native heap/CPU/cleanup containment are still missing.
+The pinned client references delegate record reads to usbmux; a conventional
+%ProgramData%\Apple\Lockdown path does not attest returned record ownership or ACL.
+Apple's public user-trust documentation supplies no such provider guarantee.
+Existing-only immutable trust remains a requirement, not a proven candidate property.
+
+No new native code/package/loader integration or promotion was attempted after the
+stop decision. 4F artifact/fixture reverification preserves its earlier evidence.
+Further work must first close these boundaries with synthetic observations, malformed
+record/key/resource fixtures and reviewed installation/provider assurance. Phone
+connection, Trust prompts, pairing changes and four-key device queries remain prohibited.
+
 ## Milestone 4F constrained candidate (2026-10-08)
 
 The [new safety report](native-runtime-safety.md) describes a source-owned six-call

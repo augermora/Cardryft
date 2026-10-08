@@ -1,4 +1,25 @@
-# Threat model: offline editor and staged Milestone 4F boundary
+# Threat model: offline editor and unpromoted native boundary
+
+## Milestone 4G stop decision
+
+The [4G review](../research/native-runtime-safety.md#milestone-4g-disposition-2026-10-08)
+keeps all remaining gates closed. Only documentation and repository-local artifact
+reverification changed; no listener, service, real pairing record or phone was queried.
+No new authority, package, network access or production native execution is introduced.
+
+Windows PID/path/architecture/service/signature evidence is a possible future policy,
+not an implemented authentication path. It depends on an uncompromised Windows host,
+protected installation, reviewed Apple signer profile and coherent connection identity.
+Offline signature checks cannot prove fresh revocation. The ReadPairRecord response
+contains no source owner/DACL/reparse attestation; a signed provider alone would not
+prove existing-only immutable storage. Fail closed on missing/unexpected provenance.
+
+The staged NULL PEM password callback can prompt outside socket deadlines. No encrypted
+record key was executed and no prompt fix is claimed. Per-frame/tree/BIO limits do not
+establish aggregate native memory, preemptive crypto CPU or hard cleanup ceilings.
+SafeHandle lifetime tests prove single ownership release, not bounded free duration.
+These threats prohibit promotion and hardware validation. Existing 4F source packages
+remain historical evidence, not an approved release or an up-to-date 4G source bundle.
 
 ## Milestone 4F development boundary
 

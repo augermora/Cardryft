@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Cardryft.Core;
 using Cardryft.Device.Apple.LibimobileDevice;
 
 namespace Cardryft.Tests;
@@ -141,6 +142,25 @@ public sealed class HardenedNativeRuntimeTests
         using (var handle = new NativeOwnershipHandle(new IntPtr(1), _ => releases++))
             Assert.Throws<InvalidOperationException>(() => handle.WithReference<int>(_ => throw new InvalidOperationException()));
         Assert.Equal(1, releases);
+    }
+
+    [Fact]
+    public async Task ValidatedSyntheticBundle_DoesNotApproveProductionDiscovery()
+    {
+        using var fixture = new Bundle();
+        // Matching hashes and PE identity are deliberately insufficient authority.
+        // These synthetic images are parsed only; no DLL or socket is opened.
+        using var validated = fixture.Validate();
+        Assert.False(HardenedRuntimeManifest.PromotionApproved);
+        var backend = new UnvalidatedNativeBackend(new NativeLibraryLoader(
+            fixture.Root, Architecture.X64, null));
+
+        var result = await new LibimobileDeviceDiscovery(backend)
+            .DiscoverAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(DeviceConnectionStatus.NativeDependencyUnavailable, result.Status);
+        Assert.Equal(DeviceDiagnostic.UnreviewedNativeBundle, result.Diagnostic);
+        Assert.Empty(result.Devices);
     }
 
     [Fact]

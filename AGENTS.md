@@ -10,6 +10,10 @@ Milestone 4F adds a staged C candidate, hardened loader and offline ABI fixtures
 alongside inactive preflight and a fake-testable read-only USB boundary.
 Real communication is blocked by host-authority/resource gates;
 Apple Wallet integration remains prohibited.
+Milestone 4G reviewed these gates and stopped without native changes or promotion.
+Windows identity checks and pairing-record provenance remain unimplemented; the
+default encrypted-key password callback and complete resource/cleanup ceilings
+remain blockers. A successful offline fixture or hash audit must not override them.
 
 ## Architecture
 
@@ -91,6 +95,14 @@ For the current device boundary and Milestone 4F candidate:
   stays inactive until all promotion gates pass and hardware use is authorized.
   A source-owned offline probe may load a hash-validated candidate and initialize/
   free its context, but may not enumerate/open/query devices. Never reuse 4D hashes.
+- Milestone 4G's [stopped promotion review](docs/research/native-runtime-safety.md)
+  is not authorization to contact even the approved endpoint. Socket owner PID,
+  executable/signature/service evidence and existing protected-record provenance
+  must all be independently reviewed before any protocol output. Missing or denied
+  evidence fails closed without elevation. Do not parse encrypted record keys using
+  the staged default password callback. Reverify unchanged 4F artifacts with
+  `native-build/reverify-4f.ps1 -Label <new-label>`; never overwrite prior evidence.
+  Native changes require two fresh clean builds, new pins and replacement validation.
 - Application recent-project state belongs in Windows LocalApplicationData under
   Cardryft, never beside the executable. Tests must inject repository-local paths;
   unavailable application data must remain nonfatal. Projects reference images

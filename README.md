@@ -4,6 +4,15 @@ Privacy-first, open-source Windows x64 desktop editor for custom card artwork.
 Cardryft works offline and does not interact with Apple Wallet, iPhones, devices,
 private iOS protocols, payment credentials, telemetry, networking, or cloud services.
 
+**Milestone 4G stopped at the promotion gates.** Windows ownership/signature APIs
+were researched, but socket/service identity and existing-record provenance are
+not implemented or proven. The candidate's default encrypted-key password callback,
+aggregate native memory/crypto CPU and cleanup ceilings remain unresolved. Existing
+4F hashes/PE closure/reproducibility and offline fixtures were reverified; no native
+code or production behavior changed. Runtime promotion and hardware validation remain
+blocked. See the [4G review](docs/research/native-runtime-safety.md#milestone-4g-disposition-2026-10-08)
+and [validation evidence](native-build/evidence/milestone4g-results.json).
+
 Milestone 4F adds a **staged offline native candidate**, not enabled device access.
 Its six-symbol C boundary has four typed metadata keys, existing trust only, TLS
 verification and bounded framing. Host-service trust provenance and complete crypto/
