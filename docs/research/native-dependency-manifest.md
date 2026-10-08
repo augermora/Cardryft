@@ -1,5 +1,39 @@
 # Native dependency evidence and reproducible build pipeline
 
+## Milestone 4E disposition (2026-10-08)
+
+**The exact 4D runtime is rejected for promotion.** See the
+[runtime safety / ABI audit](native-runtime-safety.md) and
+[fresh static verification evidence](../../native-build/evidence/milestone4e-results.json).
+Twelve staged DLL instances (E/F) still match the six 4D hashes, sizes, AMD64 PE
+headers and import/export records. The 62-file source package and ten audited
+source/header pairs were reverified; no completed build or old audit was rerun
+or overwritten. These identity results do not pass runtime-safety gates.
+
+TLS peer verification is disabled; StartSession can succeed without SSL or a
+usable session ID. The non-handshake constructor implicitly reads DeviceClass
+outside the approved keys and reads ProductVersion before confirmed trust.
+Record reads go through local USB-service IPC; the selected path has no explicit
+record save/delete, but vendor side effects are unproven. Native advertised
+lengths, parser/enumeration allocations and total I/O/cleanup deadlines are not
+bounded. Session free is unsuitable as an unbounded SafeHandle release.
+
+Following the request's stop condition, no production manifest/loader/P/Invoke,
+native handle wrappers or DLL promotion is implemented. `native/win-x64` remains
+absent and production Refresh remains unavailable. The audit documents candidate
+C signatures/ownership/error groups, endpoint policy and proposed bounds,
+separately from implemented managed checks. Production manifest/hash/PE negative
+tests, native frame limits, SafeHandle/duplicate-release tests and the end-to-end
+LGPL replacement route remain blocked. No dependency or hardware use is added.
+Hardening changes need new locked patches/hashes and a new two-build comparison;
+they cannot be substituted under the exact 4D promotion requirement.
+
+4E validation actually ran `.\scripts\validate.ps1`: `dotnet restore`,
+`dotnet build -c Release`, `dotnet test -c Release`. **0 build warnings / 0 errors;
+158 total / 158 passed / 0 failed / 0 skipped**. Nine managed regression cases
+were added; no retry or hardware/native-runtime execution occurred. The isolated
+log is `.local/milestone4e-validation-20261008.log`. All work remains uncommitted.
+
 ## Milestone 4D source build (2026-10-08)
 
 The [implemented build pipeline](../../native-build/README.md) supersedes the 4C

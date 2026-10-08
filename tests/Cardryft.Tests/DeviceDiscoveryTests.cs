@@ -164,6 +164,47 @@ public sealed class DeviceDiscoveryTests
         Assert.Equal(1, connection.DisposeCount);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\t")]
+    public async Task EmptyIdentifiers_AreRejectedBeforeOpening(string identifier)
+    {
+        var backend = new Backend { Devices = [new(identifier, NativeConnectionKind.Usb)] };
+        var result = await new LibimobileDeviceDiscovery(backend).DiscoverAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(DeviceDiagnostic.InvalidResponse, result.Diagnostic);
+        Assert.Empty(result.Devices);
+        Assert.Empty(backend.Opened);
+    }
+
+    [Theory]
+    [InlineData(128, true)]
+    [InlineData(129, false)]
+    public async Task IdentifierLengthBoundary_IsEnforcedBeforeOpening(int length, bool accepted)
+    {
+        var backend = new Backend { Devices = [new(new string('a', length), NativeConnectionKind.Usb)] };
+        var result = await new LibimobileDeviceDiscovery(backend).DiscoverAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(accepted ? DeviceDiagnostic.None : DeviceDiagnostic.InvalidResponse, result.Diagnostic);
+        Assert.Equal(accepted ? 1 : 0, result.Devices.Count);
+        Assert.Equal(accepted ? 1 : 0, backend.Opened.Count);
+    }
+
+    [Fact]
+    public async Task MaximumDeviceCount_IsAcceptedAndEveryConnectionIsDisposed()
+    {
+        var connections = new List<Connection>();
+        var backend = new Backend
+        {
+            Devices = Enumerable.Range(0, 32).Select(i => new NativeDevice($"synthetic-{i}", NativeConnectionKind.Usb)).ToArray(),
+            Open = _ => { var connection = new Connection(); connections.Add(connection); return connection; },
+        };
+        var result = await new LibimobileDeviceDiscovery(backend).DiscoverAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(DeviceDiagnostic.None, result.Diagnostic);
+        Assert.Equal(32, result.Devices.Count);
+        Assert.Equal(32, connections.Count);
+        Assert.All(connections, connection => Assert.Equal(1, connection.DisposeCount));
+    }
+
     [Fact]
     public async Task TextMapping_SanitizesControlsAndAllowsUnavailableFields()
     {

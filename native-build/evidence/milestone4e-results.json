@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-08",
+  "purpose": "Static runtime safety audit; no native library loading or device use",
+  "runtimeApproved": false,
+  "hardwareReady": false,
+  "stageChecks": [
+    {
+      "build": "E",
+      "file": "libcrypto-3-x64.dll",
+      "sha256": "e739523e963c313ad5f6c07275fe58ae5c8f2e3f8c2871096990b2cb14dfa2fd",
+      "machine": "0x8664",
+      "bytes": 9031118,
+      "matches4D": true
+    },
+    {
+      "build": "E",
+      "file": "libimobiledevice-1.0.dll",
+      "sha256": "8343a8c164d574814f8d26264e2854288909bf7e392c17db0f52e0c59a933b29",
+      "machine": "0x8664",
+      "bytes": 132876,
+      "matches4D": true
+    },
+    {
+      "build": "E",
+      "file": "libimobiledevice-glue-1.0.dll",
+      "sha256": "f1ee158d22ac3938536a9b50141b5acbd1f1bfb7935368beea070107e1569386",
+      "machine": "0x8664",
+      "bytes": 151911,
+      "matches4D": true
+    },
+    {
+      "build": "E",
+      "file": "libplist-2.0.dll",
+      "sha256": "bd3a992957bc6758b59f1da84bc831a2e455b421f39e8f85e8140b07cff60537",
+      "machine": "0x8664",
+      "bytes": 181118,
+      "matches4D": true
+    },
+    {
+      "build": "E",
+      "file": "libssl-3-x64.dll",
+      "sha256": "9cf8cd67df7f3eddff3d145cb4513f9e9745d35974d147a1c8b3b0ae93cbef45",
+      "machine": "0x8664",
+      "bytes": 1186777,
+      "matches4D": true
+    },
+    {
+      "build": "E",
+      "file": "libusbmuxd-2.0.dll",
+      "sha256": "9e2edc02b3a243c5c03d06be3ee42210fc07b2ce8270f5a72b561dd599df0052",
+      "machine": "0x8664",
+      "bytes": 66323,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libcrypto-3-x64.dll",
+      "sha256": "e739523e963c313ad5f6c07275fe58ae5c8f2e3f8c2871096990b2cb14dfa2fd",
+      "machine": "0x8664",
+      "bytes": 9031118,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libimobiledevice-1.0.dll",
+      "sha256": "8343a8c164d574814f8d26264e2854288909bf7e392c17db0f52e0c59a933b29",
+      "machine": "0x8664",
+      "bytes": 132876,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libimobiledevice-glue-1.0.dll",
+      "sha256": "f1ee158d22ac3938536a9b50141b5acbd1f1bfb7935368beea070107e1569386",
+      "machine": "0x8664",
+      "bytes": 151911,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libplist-2.0.dll",
+      "sha256": "bd3a992957bc6758b59f1da84bc831a2e455b421f39e8f85e8140b07cff60537",
+      "machine": "0x8664",
+      "bytes": 181118,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libssl-3-x64.dll",
+      "sha256": "9cf8cd67df7f3eddff3d145cb4513f9e9745d35974d147a1c8b3b0ae93cbef45",
+      "machine": "0x8664",
+      "bytes": 1186777,
+      "matches4D": true
+    },
+    {
+      "build": "F",
+      "file": "libusbmuxd-2.0.dll",
+      "sha256": "9e2edc02b3a243c5c03d06be3ee42210fc07b2ce8270f5a72b561dd599df0052",
+      "machine": "0x8664",
+      "bytes": 66323,
+      "matches4D": true
+    }
+  ],
+  "auditedSources": [
+    {
+      "file": "libimobiledevice-1.4.0/src/idevice.c",
+      "sha256": "c49b7efab2ed43667c1a8237e73210e208180e86d9f747f9285b964810754ddd",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libimobiledevice-1.4.0/src/lockdown.c",
+      "sha256": "cd484ee9d2250ec34c0304743ca56226d5622becec7012377821f52af4f46fb8",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libimobiledevice-1.4.0/src/property_list_service.c",
+      "sha256": "d6e3d8ef13220122c7ddb314d14f5a57ac8ca501dd200dca5f79d80fbee3192e",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libimobiledevice-1.4.0/common/userpref.c",
+      "sha256": "8c694cb7b6ee6cd7baf84068f6eba6720fce80b39ff9ef257e11fc3b0473f357",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libimobiledevice-1.4.0/include/libimobiledevice/libimobiledevice.h",
+      "sha256": "5d30964645dc6327e9cb85b2e0e05b3c0a1a6b896a1d8ed2fbd6224f7c9094a4",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libimobiledevice-1.4.0/include/libimobiledevice/lockdown.h",
+      "sha256": "0c684f80a68013f990a34d8709956b671a6ede1a076933a53adeb332823214d4",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libusbmuxd-2.1.1/src/libusbmuxd.c",
+      "sha256": "c1954384c81fed026afc91439a3c7e706026161bc44bdcffe7b37518ddb07911",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libusbmuxd-2.1.1/include/usbmuxd.h",
+      "sha256": "31d2924dde2069a6f3807d9f9bb88a0e18829b3b219c7b2826a73ef49e5670ce",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libplist-2.7.0/include/plist/plist.h",
+      "sha256": "118a5ef7f331b2af5bc0d44032c1c761acc1c84fbc0fa5d7965e52b6169e69b1",
+      "matchesEAndF": true
+    },
+    {
+      "file": "libplist-2.7.0/src/plist.c",
+      "sha256": "1441dffa1c874610b545569f061c887e67ed0a7c9fe7d3d2ea1843dd2aa1029a",
+      "matchesEAndF": true
+    }
+  ],
+  "sourceMaterialFilesVerified": 62,
+  "sourceMaterialBinaries": 0,
+  "productionInteropImplemented": false,
+  "nativeBuildsRepeated": false,
+  "blockers": [
+    "TLS peer authentication not established; security level zero and optional plaintext session",
+    "Implicit DeviceClass read outside the four-key allowlist",
+    "Unbounded native frame/parser/enumeration allocations and total deadlines",
+    "No bounded non-I/O lockdown release suitable for SafeHandle",
+    "Transport override and network snapshots remain native capabilities",
+    "Existing-trust HostID acquisition and vendor side-effect guarantee incomplete",
+    "Production loader and LGPL modified-application replacement route deferred"
+  ],
+  "managedValidation": {
+    "script": ".\\scripts\\validate.ps1",
+    "commands": [
+      "dotnet restore",
+      "dotnet build -c Release",
+      "dotnet test -c Release"
+    ],
+    "exitCode": 0,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "testsTotal": 158,
+    "testsPassed": 158,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "newRegressionCases": 9,
+    "log": ".local/milestone4e-validation-20261008.log"
+  },
+  "pinnedArchiveProtocolFilesVerified": [
+    "libplist-2.7.0/include/plist/plist.h",
+    "libplist-2.7.0/src/plist.c",
+    "libusbmuxd-2.1.1/src/libusbmuxd.c",
+    "libusbmuxd-2.1.1/include/usbmuxd.h",
+    "libimobiledevice-1.4.0/src/idevice.c",
+    "libimobiledevice-1.4.0/src/lockdown.c",
+    "libimobiledevice-1.4.0/src/property_list_service.c",
+    "libimobiledevice-1.4.0/common/userpref.c",
+    "libimobiledevice-1.4.0/include/libimobiledevice/lockdown.h",
+    "libimobiledevice-1.4.0/include/libimobiledevice/libimobiledevice.h"
+  ]
+}

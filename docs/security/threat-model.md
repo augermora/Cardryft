@@ -124,6 +124,33 @@ stop condition. No hardware validation or Wallet access takes place in 4C.
 
 ## Milestone 4D build and supply-chain boundary
 
+### Milestone 4E runtime safety disposition
+
+The [exact-source runtime audit](../research/native-runtime-safety.md) rejects
+the 4D candidate. Reproducibility and static PE closure do not authenticate an
+iPhone or bound hostile response allocations. The non-handshake path contains no
+explicit Pair/record writes, but service/device side effects are not guaranteed.
+Do not infer trust from record presence or a TLS handshake: peer verification is
+disabled, security level is zero and plaintext StartSession can succeed.
+Constructor DeviceClass access is outside the approved four-key scope.
+
+Native mux/lockdown lengths are allocated before limits; parser, enumeration,
+TLS and cleanup lack absolute operation deadlines. Cleanup can send StopSession
+and await TLS shutdown, so finalizer I/O and abandoned C work are unacceptable.
+Credential-bearing blobs must not enter logs, projects or public models; imported
+buffers are heap-freed without secure wiping. A compromised loopback service,
+changed transport environment or hostile device can cross this boundary despite
+managed checks. Native endpoints must be immutable, USB-only and numeric-loopback;
+checking an environment value once is insufficient.
+
+No library, record or phone was accessed. No production loader/interop/SafeHandle
+or promotion is added; new tests protect only the inactive managed boundary.
+Manifest/PE/hash/race-resistant loading, native numeric error/lifetime tests,
+pre-allocation budgets and the modified-library/app replacement route remain
+blocked gates. Safety patches require new reproducible hashes, complete source
+and license evidence, and hardware-free negative fixtures before any later
+hardware milestone. The current runtime is **not ready for device use**.
+
 Hash-pinned official source/toolchain archives are acquired under ignored
 `.local/native-build`; the build runner has a controlled PATH and isolated
 HOME/AppData/temp state. Offline builds execute compilers and source build scripts,

@@ -91,6 +91,22 @@ validation. Upstream TLS/trust behavior and native operation bounds still requir
 review before any device milestone. Matching source/notice material is staged locally;
 Cardryft remains MIT and bundles no proprietary Apple components.
 
+## Milestone 4E: runtime safety audit (blocked)
+
+The [source/ABI audit](docs/research/native-runtime-safety.md) rejects promotion of
+the exact 4D candidate. TLS peer verification is disabled, an implicit DeviceClass
+read exceeds the four-key scope, and native frames/enumeration/cleanup lack the
+required bounds. No explicit record writes occur on the traced non-handshake
+path, but vendor side effects and authenticated existing-trust setup are unproven.
+
+Both staged builds still match the 4D hashes/imports/exports; all 62 source-package
+files were reverified without rebuilding. Native loading, production manifest,
+P/Invoke, SafeHandles and runtime promotion remain deferred. The application still
+fails closed and is **not ready for hardware validation**. Added tests exercise the
+inactive boundary only. No packages, device integration or production behavior changed.
+Native safety repairs will need new pins and clean-build comparison, followed by
+offline ABI/loader tests and a working LGPL replacement route before hardware use.
+
 ## Project format and sources
 
 `.cardryft` files are readable JSON, format **version 1**:

@@ -170,6 +170,19 @@ See [native evidence](../research/native-dependency-manifest.md) and
 
 ## Packages, tests, and limitations
 
+Milestone 4E's [source and ABI safety audit](../research/native-runtime-safety.md)
+keeps the native boundary inactive. Exact 4D binaries fail TLS authentication,
+implicit-key, allocation and deadline gates; existing-trust record side effects
+are not guaranteed. No production loader/P/Invoke/SafeHandle is added. Native
+credentials must remain internal to a future reviewed boundary, with bounded
+parsing and ownership; no generic credential/key API belongs in Core/UI.
+Session free currently performs protocol I/O, so it cannot be an unbounded
+SafeHandle finalizer. Modules must outlive all handles and operations. Loader
+manifest and LGPL replacement tooling remain release gates. Native repairs must
+produce newly reviewed hashes and two clean builds; the 4D hashes cannot authorize
+those changes. New fake regressions protect the unavailable backend and metadata/
+identifier/count contract without claiming native ABI or hardware validation.
+
 No Milestone 3 packages were added. Imaging uses System.Drawing.Common 10.0.12
 (transitive Microsoft.Win32.SystemEvents 10.0.12). Tests retain Microsoft.NET.Test.Sdk
 17.14.1, xunit.v3.mtp-off 4.0.1, xunit.runner.visualstudio 4.0.0. App/Imaging/tests

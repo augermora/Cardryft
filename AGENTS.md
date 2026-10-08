@@ -73,6 +73,15 @@ For the current Milestone 4B preflight:
   This exception does not authorize loading the device runtime, device utilities,
   USB enumeration, usbmux/lockdown calls, pairing, or hardware use. Build artifacts
   remain staged until reproducibility, dependency, licensing and interop gates pass.
+- Milestone 4E's [runtime safety audit](docs/research/native-runtime-safety.md)
+  rejects the exact 4D candidate. Do not enable interop, load/promote its DLLs, or
+  use hardware. Reproducible hashes do not prove authenticated existing trust,
+  four-key-only native reads, immutable records, or bounded allocations/cleanup.
+  Native hardening changes require newly reviewed pins and two clean builds;
+  never substitute modified binaries under the old hashes. A managed timeout
+  cannot abort C work; SafeHandle finalizers must not perform unbounded protocol I/O.
+  Keep transport endpoints immutable and reject redirects without global
+  environment mutation. Native limits must precede allocation/parsing/marshalling.
 - Application recent-project state belongs in Windows LocalApplicationData under
   Cardryft, never beside the executable. Tests must inject repository-local paths;
   unavailable application data must remain nonfatal. Projects reference images

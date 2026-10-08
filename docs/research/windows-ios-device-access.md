@@ -1,5 +1,23 @@
 # Windows ↔ iPhone device access research
 
+## Milestone 4E runtime decision (2026-10-08)
+
+The [pinned-source runtime/ABI audit](native-runtime-safety.md) rejects the exact
+4D candidate for promotion. The conditional recommendation below is not approval
+to load it or test hardware. TLS peer verification is disabled, the non-handshake
+constructor reads DeviceClass, and native allocation/deadline/cleanup bounds fail
+the required gate. Narrow primitives contain no explicit record writes; existing
+trust authentication and opaque vendor side effects are not proven. Automatic
+pairing helpers remain forbidden.
+
+Windows IPC would be fixed numeric `127.0.0.1:27015` to separately installed Apple
+USB support, with network devices filtered and redirects rejected at every native
+connection. Today no socket or library is opened. Native four-key constraints,
+credential lifetime, nonblocking release, race-resistant loader and LGPL modified
+application route require newly reviewed native revisions and offline fixtures.
+Production stays at the inactive, fake-tested abstraction; hardware readiness is
+**No**. No iPhone or Wallet access took place.
+
 Research date: **2026-10-06**. The research phase was documentation only. No dependency
 was added, device binary downloaded or loaded, third-party device tool executed,
 iPhone connected, or device API exercised. Compatibility statements below are

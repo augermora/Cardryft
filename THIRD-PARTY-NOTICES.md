@@ -1,6 +1,6 @@
 # Third-party native dependency notices and compliance ledger
 
-**Milestones 4C–4D: native audit/build material, not an approved runtime release.**
+**Milestones 4C–4E: native audit/build material, not an approved runtime release.**
 Cardryft's own source remains MIT under LICENSE. This document does not relicense
 third-party code or assert completed distribution compliance. Existing managed
 NuGet dependencies are unchanged; their package licenses remain applicable.
@@ -12,6 +12,27 @@ only as inert, ignored `.local/milestone4c-audit` evidence. No Apple component i
 copied, bundled or licensed by Cardryft.
 
 ## Milestone 4D source-built selection
+
+Milestone 4E's [runtime safety audit](docs/research/native-runtime-safety.md)
+rejects the exact 4D candidate; no DLLs are promoted or distributed. Both builds'
+six DLLs and the existing 62-file source-material inventory were reverified
+without overwriting the frozen package. The licenses below remain unchanged.
+
+Existing acquire/prepare/build/audit/compare/package-source scripts provide a
+candidate rebuild route, with exact commands in the audit. The LGPL-3.0 section
+4(d)(0) modified-application recombination route is **incomplete**: no approved
+interop, production manifest or recipient pin-generation/install tooling exists.
+Before a binary release, test a compatible modified-library build and installable
+modified MIT application; supply matching sources, patches and application code
+with equivalent access; retain notices and review installation/reverse-engineering
+requirements. Do not substitute an unsigned-DLL override in official builds.
+
+Prefer native binaries as separately versioned release assets with matching
+source, rather than Git binaries. No release or commit is created. Legal review
+remains required for LGPL/Apache compatibility, GCC exception eligibility and
+source/installation obligations; this ledger is not a legal guarantee. The
+historical E source package retains its original 4D notices; a future release
+must carry final notices and source/patches for newly approved binaries.
 
 The [locked build](native-build/README.md) uses upstream libimobiledevice 1.4.0,
 libusbmuxd 2.1.1, libplist C 2.7.0, glue 1.3.2 and OpenSSL 3.6.5. Exact commits,

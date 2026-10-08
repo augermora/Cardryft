@@ -65,6 +65,36 @@ public sealed class NativeLibraryLoaderTests
         Assert.Empty(result.Devices);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void UnvalidatedBackend_CannotBypassPreflight(bool directoryPresent)
+    {
+        var inspector = new Paths
+        {
+            Attributes = _ => directoryPresent ? FileAttributes.Directory : null,
+        };
+        var backend = new UnvalidatedNativeBackend(new NativeLibraryLoader(@"C:\app", Architecture.X64, null, inspector));
+
+        Assert.NotEqual(DeviceDiagnostic.None, backend.CheckReadiness());
+        var enumeration = Assert.Throws<NativeDeviceException>(() => { _ = backend.GetUsbDevicesAsync(CancellationToken.None); });
+        var connection = Assert.Throws<NativeDeviceException>(() => { _ = backend.ConnectUsbAsync("synthetic-id", CancellationToken.None); });
+        Assert.Equal(NativeDeviceError.Unsupported, enumeration.Error);
+        Assert.Equal(NativeDeviceError.Unsupported, connection.Error);
+    }
+
+    [Fact]
+    public void ManagedMetadataContract_ExposesOnlyFourTypedReadsAndNoPairing()
+    {
+        Assert.Equal(["DeviceName", "ProductType", "ProductVersion", "BuildVersion"], Enum.GetNames<DeviceMetadataField>());
+        var read = Assert.Single(typeof(IDeviceMetadataConnection).GetMethods(), method => method.Name == "ReadAsync");
+        Assert.Equal([typeof(DeviceMetadataField), typeof(CancellationToken)], read.GetParameters().Select(parameter => parameter.ParameterType));
+        Assert.Equal(["CheckReadiness", "ConnectUsbAsync", "GetUsbDevicesAsync"],
+            typeof(IDeviceNativeBackend).GetMethods().Select(method => method.Name).Order(StringComparer.Ordinal));
+        Assert.Equal(["ReadAsync", "get_Status", "get_Trust"],
+            typeof(IDeviceMetadataConnection).GetMethods().Select(method => method.Name).Order(StringComparer.Ordinal));
+    }
+
     private sealed class Paths : INativePathInspector
     {
         public bool Network { get; init; }
