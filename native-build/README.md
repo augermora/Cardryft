@@ -1,4 +1,56 @@
-# Cardryft native build pipeline (Milestone 4D)
+# Cardryft native build pipeline (Milestones 4D–4F)
+
+## Milestone 4F: staged offline candidate
+
+New order: OpenSSL → bounded libplist C → MIT Cardryft C shim. The general-purpose
+glue/usbmux/libimobiledevice APIs below belong to historical 4D. All original pins
+remain; local C sources and the plist bounds patch are additionally hash locked.
+Four runtime DLLs are expected. No packages/tools/Apple binaries are added.
+
+Final clean build labels are 4F-C/D:
+
+```powershell
+.\native-build\build.ps1 -Label 4F-C
+.\native-build\build.ps1 -Label 4F-D
+.\native-build\audit.ps1 -Label 4F-C
+.\native-build\audit.ps1 -Label 4F-D
+.\native-build\compare.ps1 -BuildA 4F-C -BuildB 4F-D
+.\native-build\generate-runtime-pins.ps1 -Label 4F-C -Destination <new-source-file-inside-repository>
+.\native-build\build-replacement.ps1 -Label 4F-LGPL
+.\native-build\replacement-test.ps1 -Baseline 4F-C -Replacement 4F-LGPL -Label 4F-runtime-trials
+.\native-build\test-replacement-fixtures.ps1 -Baseline 4F-C -Replacement 4F-LGPL -Label 4F-LGPL-fixture
+.\native-build\package-source.ps1 -Label 4F-C
+.\scripts\validate.ps1
+```
+
+Use fresh destinations. Verified existing downloads/toolchain need no reacquisition.
+Logs/state/source copies stay under .local. 4F-A/B initially failed synthetic TLS
+fixtures (same root/device subject and late SSL error capture). Corrected fixtures
+passed; comparison then found the shim's path-derived auto image base. Fixing that
+preferred address requires final C/D; old evidence stays preserved. ASLR remains.
+
+Native fixtures use synthetic memory BIOs, never sockets/device operations.
+CardryftNativeOfflineProbe=true is an explicit application source-build property,
+enabling only --native-offline-probe: validate pins/PE, load/version, initialize/free,
+show/close WinForms. No enumerate/open/query or active default backend exists.
+Ordinary builds omit the executable branch. Probe output/state is repository local.
+
+build-replacement.ps1 changes a compatible library's version text and rebuilds it
+from locked source/patches. replacement-test.ps1 builds separate application source
+copies; recipient source explicitly changes one compiled pin after audit. Official
+pins must reject the replacement. No runtime JSON/unsigned-DLL mode or relaxed path/
+import policy exists. generate-runtime-pins.ps1 makes a new reviewable source file;
+it never overwrites official pins or approves promotion. Review compatible source/
+audit before adopting pins in a recipient-controlled rebuild.
+
+The source package separates frozen native recipes from post-build release workflows
+and includes MIT application/tests, upstream/runtime compiler sources, full licenses
+and material hashes. No release is made. LGPL/Apache/GCC installation/compliance needs
+human legal review. The [4F report](../docs/research/native-runtime-safety.md) explains
+why host listener/record provenance and crypto/resource bounds still block promotion
+and hardware. Dropping DLLs into native/win-x64 cannot enable normal discovery.
+
+## Historical Milestone 4D pipeline
 
 This pipeline builds audit candidates. It does not enable Cardryft's native backend,
 install drivers, enumerate USB devices, contact usbmux/lockdown, or access an iPhone.

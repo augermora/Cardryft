@@ -43,13 +43,16 @@ rmdir "$prefix/cardryft-native"
 # OpenSSL pkgconfig uses the configured prefix. Make it describe this build's staging path.
 sed -i "s|^prefix=.*|prefix=$prefix|" "$prefix/lib/pkgconfig/"*.pc
 cp configdata.pm "$work/audit/openssl-configdata.pm"
-for archive in libplist-2.7.0 libimobiledevice-glue-1.3.2 libusbmuxd-2.1.1 libimobiledevice-1.4.0; do
+for archive in libplist-2.7.0; do
     tar -xf "$root/downloads/$archive.tar.bz2" -C "$work/src"
     cd "$work/src/$archive"
     if [[ "$archive" == libimobiledevice-glue-* ]]; then patch --batch --fuzz=0 -p1 <"$recipe/patches/glue-windows-library-case.patch"; fi
     if [[ "$archive" == libusbmuxd-* ]]; then patch --batch --fuzz=0 -p1 <"$recipe/patches/libusbmuxd-windows-library-case.patch"; fi
     options=(--host=x86_64-w64-mingw32 --prefix="$prefix" --enable-shared --disable-static)
-    if [[ "$archive" == libplist-* ]]; then options+=(--without-cython --without-tests); fi
+    if [[ "$archive" == libplist-* ]]; then
+        patch --batch --fuzz=0 -p1 <"$recipe/patches/libplist-cardryft-bounds.patch"
+        options+=(--without-cython --without-tests)
+    fi
     if [[ "$archive" == libimobiledevice-1.4.0 ]]; then
         patch --batch --fuzz=0 -p1 <"$recipe/patches/libimobiledevice-minimal.patch"
         patch --batch --fuzz=0 -p1 <"$recipe/patches/libimobiledevice-windows-exports.patch"
@@ -80,6 +83,19 @@ for archive in libplist-2.7.0 libimobiledevice-glue-1.3.2 libusbmuxd-2.1.1 libim
     esac
     [[ -f "$prefix/bin/$expected" ]] || { printf 'Required shared DLL missing: %s\n' "$expected"; exit 2; }
 done
+# Cardryft owns the restricted protocol boundary. The general-purpose glue,
+# usbmux and libimobiledevice APIs are deliberately not compiled or linked.
+mkdir -p "$work/shim"
+cp "$recipe/shim/"* "$work/shim/"
+cd "$work/shim"
+{ printf 'EXPORTS\n'; cat cardryft.exports; } >cardryft.def
+gcc $CFLAGS -Wall -Wextra -Werror -I"$prefix/include" -shared cardryft_device.c cardryft.def \
+    -o "$prefix/bin/cardryft-device.dll" $LDFLAGS -Wl,--image-base=0x180000000 -L"$prefix/lib" -lssl -lcrypto -lplist-2.0 -lws2_32
+gcc $CFLAGS -Wall -Wextra -Werror -I"$prefix/include" tests.c \
+    -o "$work/shim/native-fixtures.exe" $LDFLAGS -L"$prefix/lib" -lssl -lcrypto -lplist-2.0 -lws2_32
+# Source-owned fixtures use synthetic in-memory data. They never call enumeration,
+# open/query, connect/send/receive, Apple services or a device.
+./native-fixtures.exe >"$work/audit/native-fixtures.txt"
 find "$prefix/bin" -name '*.dll' -exec cp {} "$work/runtime/" \;
 for dll in "$work/runtime/"*.dll; do
     objdump -p "$dll" >"$work/audit/$(basename "$dll").objdump.txt"

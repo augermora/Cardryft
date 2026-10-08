@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Cardryft.Tests" />
+    <InternalsVisibleTo Include="Cardryft.App" />
     <ProjectReference Include="../Cardryft.Core/Cardryft.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,61 @@
 # Native dependency evidence and reproducible build pipeline
 
+## Milestone 4F candidate (2026-10-08)
+
+The new selection has four DLLs: cardryft-device.dll (MIT narrow C boundary),
+libcrypto-3-x64.dll and libssl-3-x64.dll (pinned OpenSSL 3.6.5), and libplist-2.0.dll
+(pinned 2.7.0 plus bounds/cleansing patch). Glue/usbmux/libimobiledevice stay pinned
+research sources, not compiled dependencies. Compiler/CRT licenses still apply.
+
+The [4F safety report](native-runtime-safety.md) and
+[4F evidence](../../native-build/evidence/milestone4f-results.json) distinguish
+reproducibility/ABI results from host trust authority and crypto resource gates.
+**No promotion: listener/record provenance and complete CPU/cleanup bounds remain
+unproven.** Normal Refresh is inactive. Only fixed 127.0.0.1:27015 Windows IPC was
+approved by the owner. No real Apple service, record or device was queried.
+Non-interactive private-key decoding is also unresolved: NULL PEM password callbacks
+can invoke the default prompt for an encrypted record key. This path was never used.
+
+The new pins are compiled into
+[HardenedRuntimeManifest.cs](../../src/Cardryft.Device/Apple/LibimobileDevice/HardenedRuntimeManifest.cs).
+Audit records include exact sizes/SHA, AMD64/zero timestamps, all imports/exports
+and no delay imports/forwarders. Pins do not authorize discovery/device APIs.
+Final clean labels are 4F-C/D; unsuccessful 4F-A/B evidence is preserved. The 4D
+E/F hashes below are historical, not the new loader allowlist.
+
+The final 4F-C/D runtime DLLs match byte-for-byte; independently computed SHA-256:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| cardryft-device.dll | 54226 | de3819264b2210ba2975984d22ea77a6e5e2f1d1b0b8a14fe1084cf2597427ae |
+| libcrypto-3-x64.dll | 9031118 | e739523e963c313ad5f6c07275fe58ae5c8f2e3f8c2871096990b2cb14dfa2fd |
+| libplist-2.0.dll | 182898 | f3624144540e9c6363e337e1be9a6e3ab64e0db5923071ce96bf1160bfc7ca67 |
+| libssl-3-x64.dll | 1186777 | 9cf8cd67df7f3eddff3d145cb4513f9e9745d35974d147a1c8b3b0ae93cbef45 |
+
+These are new measurements of clean 4F outputs; unchanged component hashes may
+coincide with historical builds without using historical evidence as approval.
+All four are AMD64 PE32+ with zero timestamps, no delay imports/forwarders and
+exact recursive imports. Root exports are exactly six. Each native build passed
+43 offline assertions and emitted two compiler warnings (OpenSSL const qualifier,
+libplist transposed calloc arguments), zero compiler errors. Recipient libplist
+emitted the same one calloc warning. Cardryft C sources compile with -Werror.
+
+The recipient-modified libplist SHA is
+67822bc843b6ef2925884d20567db41f1eb8dc8eb4416631de62450e53ac7fd8.
+Official pins rejected it (exit 1); the separately rebuilt recipient app accepted
+it (exit 0), initialized/freed the context and showed/closed WinForms. Original
+pins with original DLLs also passed. The modified library passed all 43 memory-only
+parser/TLS assertions. No device operations occurred in any probe. Final .NET
+validation: **184 total / 184 passed / 0 failed / 0 skipped; 0 warnings / 0 errors**.
+Three intermediate xUnit analyzer warnings were corrected with async cancellation-
+aware test coordination; no suppression or relaxed assertion was introduced.
+
+The source package includes matching MIT application/tests/validation, frozen
+native recipe, upstream/runtime compiler source archives, full licenses and
+explicit recipient rebuilding/pin-generation/replacement workflows. A recipient's
+separately rebuilt source application does not weaken official compiled hash policy.
+Legal and installation/compliance review remain required before redistribution.
+
 ## Milestone 4E disposition (2026-10-08)
 
 **The exact 4D runtime is rejected for promotion.** See the

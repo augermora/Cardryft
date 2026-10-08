@@ -1,0 +1,178 @@
+diff --git "a/src/bplist.c" "b/src/bplist.c"
+index 85e55e2..1cf9b09 100644
+--- "a/src/bplist.c"
++++ "b/src/bplist.c"
+@@ -238,6 +238,8 @@ struct bplist_data {
+     uint8_t offset_size;
+     const char* offset_table;
+     uint32_t level;
++    uint32_t cardryft_nodes;
++    uint64_t cardryft_scalar_bytes;
+     ptrarray_t* used_indexes;
+ };
+ 
+@@ -783,6 +785,8 @@ static plist_t parse_bin_node_at_index(struct bplist_data *bplist, uint32_t node
+     plist_t plist = NULL;
+     const char* idx_ptr = NULL;
+ 
++    /* Cardryft 4F: bounded tree expansion, including repeated references. */
++    if (bplist->level >= 16 || ++bplist->cardryft_nodes > 1024) return NULL;
+     if (node_index >= bplist->num_objects) {
+         PLIST_BIN_ERR("node index (%u) must be smaller than the number of objects (%" PRIu64 ")\n", node_index, bplist->num_objects);
+         return NULL;
+@@ -826,6 +830,15 @@ static plist_t parse_bin_node_at_index(struct bplist_data *bplist, uint32_t node
+     /* finally parse node */
+     bplist->level++;
+     plist = parse_bin_node(bplist, &ptr);
++    if (plist) {
++        plist_data_t data = plist_get_data(plist);
++        if (data && (data->type == PLIST_STRING || data->type == PLIST_KEY || data->type == PLIST_DATA)) {
++            if (data->length > 131072 || bplist->cardryft_scalar_bytes > 1048576 - data->length) {
++                plist_free(plist);
++                plist = NULL;
++            } else bplist->cardryft_scalar_bytes += data->length;
++        }
++    }
+     bplist->level--;
+     return plist;
+ }
+@@ -846,7 +859,7 @@ plist_err_t plist_from_bin(const char *plist_bin, uint32_t length, plist_t * pli
+         return PLIST_ERR_INVALID_ARG;
+     }
+     *plist = NULL;
+-    if (!plist_bin || length == 0) {
++    if (!plist_bin || length == 0 || length > 65536) {
+         return PLIST_ERR_INVALID_ARG;
+     }
+ 
+@@ -878,17 +891,17 @@ plist_err_t plist_from_bin(const char *plist_bin, uint32_t length, plist_t * pli
+     root_object = be64toh(trailer->root_object_index);
+     offset_table = (char *)(plist_bin + be64toh(trailer->offset_table_offset));
+ 
+-    if (num_objects == 0) {
++    if (num_objects == 0 || num_objects > 1024) {
+         PLIST_BIN_ERR("number of objects must be larger than 0\n");
+         return PLIST_ERR_PARSE;
+     }
+ 
+-    if (offset_size == 0) {
++    if (offset_size == 0 || offset_size > 8) {
+         PLIST_BIN_ERR("offset size in trailer must be larger than 0\n");
+         return PLIST_ERR_PARSE;
+     }
+ 
+-    if (ref_size == 0) {
++    if (ref_size == 0 || ref_size > 8) {
+         PLIST_BIN_ERR("object reference size in trailer must be larger than 0\n");
+         return PLIST_ERR_PARSE;
+     }
+@@ -921,6 +934,8 @@ plist_err_t plist_from_bin(const char *plist_bin, uint32_t length, plist_t * pli
+     bplist.offset_size = offset_size;
+     bplist.offset_table = offset_table;
+     bplist.level = 0;
++    bplist.cardryft_nodes = 0;
++    bplist.cardryft_scalar_bytes = 0;
+     bplist.used_indexes = ptr_array_new(16);
+ 
+     if (!bplist.used_indexes) {
+diff --git "a/src/plist.c" "b/src/plist.c"
+index a33a6fb..4d86307 100644
+--- "a/src/plist.c"
++++ "b/src/plist.c"
+@@ -387,6 +387,12 @@ static int dict_key_compare(const void* a, const void* b)
+     return (strcmp(data_a->strval, data_b->strval) == 0) ? TRUE : FALSE;
+ }
+ 
++/* Cardryft 4F: clear locally owned scalar buffers before releasing credentials. */
++static void cardryft_clear_scalar(void *buffer, uint64_t length)
++{
++    volatile unsigned char *bytes = (volatile unsigned char*)buffer;
++    if (bytes) while (length--) *bytes++ = 0;
++}
+ void plist_free_data(plist_data_t data)
+ {
+     if (data)
+@@ -395,9 +401,11 @@ void plist_free_data(plist_data_t data)
+         {
+         case PLIST_KEY:
+         case PLIST_STRING:
++            cardryft_clear_scalar(data->strval, data->length);
+             free(data->strval);
+             break;
+         case PLIST_DATA:
++            cardryft_clear_scalar(data->buff, data->length);
+             free(data->buff);
+             break;
+         case PLIST_ARRAY:
+diff --git "a/src/xplist.c" "b/src/xplist.c"
+index 66e1dba..7435272 100644
+--- "a/src/xplist.c"
++++ "b/src/xplist.c"
+@@ -575,6 +575,8 @@ struct _parse_ctx {
+     const char *pos;
+     const char *end;
+     int err;
++    uint32_t cardryft_nodes;
++    uint32_t cardryft_depth;
+ };
+ typedef struct _parse_ctx* parse_ctx;
+ 
+@@ -1113,7 +1115,7 @@ static plist_err_t node_from_xml(parse_ctx ctx, plist_t *plist)
+                 }
+                 path_item->type = "plist";
+                 path_item->prev = node_path;
+-                node_path = path_item;
++                if (++ctx->cardryft_depth > 16) { free(path_item); ctx->err++; goto err_out; } node_path = path_item;
+ 
+                 continue;
+             } else if (!strcmp(tag, "/plist")) {
+@@ -1133,7 +1135,7 @@ static plist_err_t node_from_xml(parse_ctx ctx, plist_t *plist)
+                     goto err_out;
+                 }
+                 struct node_path_item *path_item = node_path;
+-                node_path = (struct node_path_item*)node_path->prev;
++                node_path = (struct node_path_item*)node_path->prev; ctx->cardryft_depth--;
+                 free(path_item);
+ 
+                 free(tag);
+@@ -1142,6 +1144,8 @@ static plist_err_t node_from_xml(parse_ctx ctx, plist_t *plist)
+                 continue;
+             }
+ 
++            /* Cardryft 4F: reject excessive nodes before allocating. */
++            if (++ctx->cardryft_nodes > 1024) { ctx->err++; goto err_out; }
+             plist_data_t data = plist_new_plist_data();
+             subnode = plist_new_node(data);
+             has_content = 1;
+@@ -1399,7 +1403,7 @@ static plist_err_t node_from_xml(parse_ctx ctx, plist_t *plist)
+                     }
+                     path_item->type = (data->type == PLIST_DICT) ? XPLIST_DICT : XPLIST_ARRAY;
+                     path_item->prev = node_path;
+-                    node_path = path_item;
++                    if (++ctx->cardryft_depth > 16) { free(path_item); ctx->err++; goto err_out; } node_path = path_item;
+ 
+                     parent = subnode;
+                 }
+@@ -1416,7 +1420,7 @@ static plist_err_t node_from_xml(parse_ctx ctx, plist_t *plist)
+                     goto err_out;
+                 }
+                 struct node_path_item *path_item = node_path;
+-                node_path = (struct node_path_item*)node_path->prev;
++                node_path = (struct node_path_item*)node_path->prev; ctx->cardryft_depth--;
+                 free(path_item);
+ 
+                 parent = ((node_t)parent)->parent;
+@@ -1477,11 +1481,11 @@ plist_err_t plist_from_xml(const char *plist_xml, uint32_t length, plist_t * pli
+         return PLIST_ERR_INVALID_ARG;
+     }
+     *plist = NULL;
+-    if (!plist_xml || (length == 0)) {
++    if (!plist_xml || (length == 0) || length > 65536) {
+         return PLIST_ERR_INVALID_ARG;
+     }
+ 
+-    struct _parse_ctx ctx = { plist_xml, plist_xml + length, 0 };
++    struct _parse_ctx ctx = { plist_xml, plist_xml + length, 0, 0, 0 };
+ 
+     return node_from_xml(&ctx, plist);
+ }

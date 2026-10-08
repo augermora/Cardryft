@@ -6,15 +6,12 @@ $runtimeRoot = Join-Path $runRoot 'runtime'
 $sourceLock = Get-Content "$runRoot/audit/sources-lock.json" -Raw | ConvertFrom-Json
 $mapping = @{
     'libcrypto-3-x64.dll'='openssl'; 'libssl-3-x64.dll'='openssl'
-    'libplist-2.0.dll'='libplist'; 'libimobiledevice-glue-1.0.dll'='libimobiledevice-glue'
-    'libusbmuxd-2.0.dll'='libusbmuxd'; 'libimobiledevice-1.0.dll'='libimobiledevice'
+    'libplist-2.0.dll'='libplist'; 'cardryft-device.dll'='cardryft-shim'
 }
 $nativeEdges = @{
     'libcrypto-3-x64.dll'=@(); 'libplist-2.0.dll'=@()
     'libssl-3-x64.dll'=@('libcrypto-3-x64.dll')
-    'libimobiledevice-glue-1.0.dll'=@('libplist-2.0.dll')
-    'libusbmuxd-2.0.dll'=@('libimobiledevice-glue-1.0.dll','libplist-2.0.dll')
-    'libimobiledevice-1.0.dll'=@('libcrypto-3-x64.dll','libssl-3-x64.dll','libplist-2.0.dll','libimobiledevice-glue-1.0.dll','libusbmuxd-2.0.dll')
+    'cardryft-device.dll'=@('libcrypto-3-x64.dll','libssl-3-x64.dll','libplist-2.0.dll')
 }
 $systemNames = @('ADVAPI32.dll','BCRYPT.dll','CRYPT32.dll','GDI32.dll','IPHLPAPI.dll','KERNEL32.dll','ole32.dll','SHELL32.dll','USER32.dll','WS2_32.dll')
 $crtNames = @('convert','environment','filesystem','heap','locale','math','private','process','runtime','stdio','string','time','utility') | ForEach-Object {"api-ms-win-crt-$_-l1-1-0.dll"}
@@ -37,17 +34,18 @@ $reports = foreach ($file in $files | Sort-Object Name) {
         }
         elseif ($dependency -notin $systemNames -and $dependency -notin $crtNames) { throw "Unexpected dependency: $dependency" }
     }
-    if ($file.Name -eq 'libimobiledevice-1.0.dll') {
-        $expected = @(Get-Content "$repositoryRoot/.local/native-build/recipes/$Label/patches/cardryft.exports" | Where-Object {$_ -ne ''})
+    if ($file.Name -eq 'cardryft-device.dll') {
+        $expected = @(Get-Content "$repositoryRoot/.local/native-build/recipes/$Label/shim/cardryft.exports" | Where-Object {$_ -ne ''})
         if (Compare-Object $expected @($report.Exports)) { throw 'Root export surface differs from reviewed list.' }
         if ($report.ExportFunctionCount -ne $expected.Count) { throw 'Unexpected ordinal-only root exports.' }
     }
     $source = $sourceLock.sources | Where-Object name -eq $mapping[$file.Name]
+    if ($file.Name -eq 'cardryft-device.dll') { $source=[PSCustomObject]@{name='cardryft-shim';version='1';license='MIT';files=$sourceLock.localSources} }
     $report | Add-Member -NotePropertyName Source -NotePropertyValue $source
     $report | Add-Member -NotePropertyName Patches -NotePropertyValue @($sourceLock.patches | Where-Object project -eq $source.name)
     $report | Add-Member -NotePropertyName LicenseMapping -NotePropertyValue @{
         upstream=$source.license
-        combinedSelection=$(if ($source.name -eq 'openssl') {'Apache-2.0'} else {'LGPL-3.0 via or-later permission, plus preserved file-specific notices'})
+        combinedSelection=$(if ($source.name -eq 'openssl') {'Apache-2.0'} elseif($source.name -eq 'cardryft-shim') {'MIT application using LGPL-3.0 source/recombination route'} else {'LGPL-3.0 via or-later permission, plus preserved file-specific notices'})
         compilerRuntime='GCC 16.2.0-4 GPL-3.0-or-later WITH GCC-exception-3.1'
         crtHeaders='MinGW 14.0.0.r426.g4564ee4b5-1 ZPL-2.1 and file-specific permissive terms'
         notices='THIRD-PARTY-NOTICES.md and matching source/release-material'

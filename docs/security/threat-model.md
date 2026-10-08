@@ -1,4 +1,38 @@
-# Threat model: Milestones 3–4C preflight and artifact audit
+# Threat model: offline editor and staged Milestone 4F boundary
+
+## Milestone 4F development boundary
+
+Normal application discovery remains inactive. Source-owned offline parser/TLS
+fixtures and the explicit source-build ABI/WinForms probe may load a validated
+candidate and initialize/free a context, but never contact Apple IPC or invoke
+enumerate/open/query. Fixtures use synthetic transient memory-only keys/certificates.
+No real pairing/device data is logged or stored; old 4D pins are not authorization.
+
+The candidate allows four metadata enums only, no generic/pair/write/service ABI,
+literal owner-approved 127.0.0.1:27015 Windows IPC, USB filtering and no endpoint/
+environment/proxy overrides. TLS requires normal peer verification, existing-record
+certificate match, TLS 1.2/security level 2 and no plaintext metadata. OpenSSL disables
+config autoload/DSO/modules/engines/compression/socket helpers. libplist has input/
+depth/node/expansion caps and cleansing. Exact bounds are in the
+[safety report](../research/native-runtime-safety.md). No real IPC was exercised.
+
+Critical remaining threats: substituted loopback listener/record authority, opaque
+vendor side effects and native crypto heap/CPU/cleanup limits. A root and expected
+certificate supplied by the same unauthenticated listener are not independent trust
+evidence. No hardware compatibility, record immutability, preemptive cancellation
+or global heap quota is claimed. **No promotion; default discovery fails closed.**
+The staged PEM private-key decoder also retains OpenSSL's default password callback;
+encrypted keys may prompt/block outside the socket budget. It must become strictly
+non-interactive before enabling the candidate; no such key/record path was exercised.
+
+The loader requires four exact compiled hash/import pins, bounded AMD64 PE32+,
+normalized absolute local paths, no reparse/UNC/network/ADS/traversal, locked ancestors
+and files, absolute DLL_LOAD_DIR|SYSTEM32 search, no preloaded native basenames and
+only six bound C symbols. SafeHandles retain parents, serialize work, release once
+after in-flight calls. Host/process compromise is outside this guarantee. The LGPL
+route explicitly modifies compiled pins in a recipient-controlled source rebuild;
+normal binaries have no unsigned-DLL/runtime JSON bypass. No payment/Wallet/device
+integration, privileges, cloud, package or external device tool is added.
 
 ## Scope and assets
 

@@ -7,6 +7,9 @@
     <SelfContained>false</SelfContained>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(CardryftNativeOfflineProbe)' == 'true'">
+    <DefineConstants>$(DefineConstants);CARDRYFT_NATIVE_OFFLINE_PROBE</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Cardryft.Tests" />
     <ProjectReference Include="../Cardryft.Core/Cardryft.Core.csproj" />

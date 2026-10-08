@@ -92,6 +92,7 @@ public sealed class LibimobileDeviceDiscovery : IDeviceDiscovery
         NativeDeviceError.Restricted => new(DeviceConnectionStatus.Restricted, diagnostic: DeviceDiagnostic.AccessRestricted),
         NativeDeviceError.Unsupported => new(DeviceConnectionStatus.Unsupported, diagnostic: DeviceDiagnostic.Unsupported),
         NativeDeviceError.InvalidResponse => new(DeviceConnectionStatus.UnknownFailure, diagnostic: DeviceDiagnostic.InvalidResponse),
+        NativeDeviceError.Timeout => new(DeviceConnectionStatus.TransportUnavailable, diagnostic: DeviceDiagnostic.TransportUnavailable),
         _ => new(DeviceConnectionStatus.UnknownFailure, diagnostic: DeviceDiagnostic.UnknownFailure),
     };
 }

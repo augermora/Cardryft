@@ -6,7 +6,7 @@ namespace Cardryft.Device.Apple.LibimobileDevice;
 internal enum NativeConnectionKind { Usb, Network, Unknown }
 internal sealed record NativeDevice(string Identifier, NativeConnectionKind Connection);
 internal enum DeviceMetadataField { DeviceName, ProductType, ProductVersion, BuildVersion }
-internal enum NativeDeviceError { Disconnected, TransportUnavailable, NotTrusted, Restricted, Unsupported, InvalidResponse, Unknown }
+internal enum NativeDeviceError { Disconnected, TransportUnavailable, NotTrusted, Restricted, Unsupported, InvalidResponse, Unknown, Timeout }
 
 internal sealed class NativeDeviceException(NativeDeviceError error) : Exception("Device operation unavailable.")
 {

@@ -10,7 +10,8 @@ App references Core, Imaging, Storage, Device, and Wallet. Imaging and Storage
 reference only Core. Core uses no UI/platform APIs and performs no I/O. Device
 references only Core; its 4B native backend remains disabled. Wallet remains empty.
 Tests reference Core, Device, Imaging, Storage, and App; App and Device expose
-internals only to the test assembly. All namespaces
+internals to the test assembly; Device also grants App access for its explicit
+source-build offline ABI probe. All namespaces
 start with Cardryft. No circular or infrastructure-to-infrastructure dependencies.
 
 Milestone 4A is [Windows ↔ iPhone technical research](../research/windows-ios-device-access.md)
@@ -29,6 +30,22 @@ safe shutdown still require review; UI cancellation cannot terminate C calls.
 
 ## Device preflight and read-only boundary
 
+Milestone 4F adds NativeShimAbi/SafeHandle ownership, a compiled exact hash/import
+manifest, bounded PE validation and controlled Windows loading inside Device.
+The MIT C shim/build recipe live under native-build; no general-purpose
+libimobiledevice/usbmux/glue API is linked. Core stays platform independent; no
+unrelated infrastructure/editor behavior changes. The preflight below remains the
+**normal composition**; actual ABI calls are not wired into discovery while gates fail.
+
+Native handles retain parent contexts/modules and serialize their work; callers
+own bounded record/text buffers. No owning pointer or plist escapes interop. Loader
+validation holds ancestor/file handles, checks pins/imports/architecture, uses
+absolute DLL_LOAD_DIR|SYSTEM32 and rejects preloaded native basenames. Cleanup has
+no protocol I/O. A .NET deadline cannot preempt native crypto. The compile-time
+CardryftNativeOfflineProbe option tests initialize/free and shows/closes WinForms;
+it cannot enumerate/query or enable the backend. Ordinary builds omit that branch.
+The [4F safety report](../research/native-runtime-safety.md) records remaining gates.
+
 Core owns IDeviceDiscovery, immutable DeviceInfo/result snapshots and typed status,
 trust and diagnostic values, with no platform API or I/O dependency. Public device
 snapshots expose only four bounded optional metadata fields and no backend identifier.
@@ -39,10 +56,10 @@ There is no public IDeviceConnection or generic service/key/write/pairing interf
 NativeLibraryLoader is **preflight only**. It checks x64, rejects endpoint overrides,
 network paths and reparse ancestors, and considers only an explicitly composed app
 root's native/win-x64 directory. No DLL is loaded even if the directory exists:
-MissingNativeBundle/UnreviewedNativeBundle are terminal until a reviewed runtime and
-C ABI exist. No DllImport, unsafe pointer, native SafeHandle, socket or device call is
-implemented. Consequently actual native handle disposal/ABI/timeout testing is deferred;
-fake connection ownership is exercised with deterministic disposal on all paths.
+MissingNativeBundle/UnreviewedNativeBundle are terminal while promotion gates fail.
+The separate 4F ABI/loader owns its internal pointers and SafeHandles, but the
+normal preflight never calls it. Offline context ownership/ABI and fake error/deadline
+tests run without devices; actual device session/error-path testing remains deferred.
 
 LibimobileDeviceDiscovery always uses that unavailable backend in production. Its
 internal test seam supplies USB snapshots and confirmed existing trust; it never

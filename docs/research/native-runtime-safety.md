@@ -1,4 +1,196 @@
-# Milestone 4E: runtime safety and ABI audit
+# Native runtime safety: Milestone 4F and historical 4E audit
+
+## Milestone 4F disposition (2026-10-08)
+
+**The hardened candidate remains staged. No promotion or hardware use is approved.**
+Normal application discovery still composes `UnvalidatedNativeBackend`. Exact
+build/test/replacement evidence is in [4F results](../../native-build/evidence/milestone4f-results.json).
+Old artifacts, failed runs and frozen recipes remain preserved.
+
+The following issues block unconditional trust/resource approval:
+
+1. The fixed loopback listener is a host trust authority. Its process/service
+   identity and existing-record provenance are not authenticated. A different
+   local listener could supply a coherent invented root, device certificate and
+   TLS peer. Chain validation and exact matching against that same supplied
+   record cannot detect this substitution. A reviewed, non-elevated, offline
+   host-authority check or independently authenticated existing-record source is
+   required before enabling this path. Record presence alone cannot establish trust.
+2. Framing/parser/BIO limits and absolute socket deadlines are implemented, but
+   they are not a global OpenSSL heap quota or a preemptive certificate/signature
+   CPU deadline. Local cleanup has no protocol I/O; a hard wall-clock ceiling for
+   third-party frees/OS cleanup is unproven. Adversarial crypto/resource tests and
+   cleanup measurements remain necessary. Cancellation cannot interrupt C work.
+3. RootPrivateKey parsing still passes a NULL password callback to
+   PEM_read_bio_PrivateKey. OpenSSL's default encrypted-PEM callback can request a
+   passphrase/read input outside the socket deadline. Encrypted/unexpected key
+   encodings must instead be rejected with a non-interactive callback and an offline
+   regression fixture before enabling the candidate. This path was not executed by
+   any probe; context initialization and memory-only TLS fixtures do not parse a
+   real record. No passphrase was requested in this milestone.
+
+No real Apple service, pairing record, USB enumeration, device metadata or phone
+was accessed. Executable fixtures use synthetic memory-only data, or ABI version/
+context initialize/free. Initialization starts Winsock but creates no socket.
+The offline application probe never calls enumerate/open/query, including on failure.
+
+## Source-owned narrow implementation
+
+`native-build/shim/cardryft_device.c` and `.h` are independently authored MIT
+Cardryft source implementing protocol facts traced to the pinned upstream files
+below. General-purpose libimobiledevice/usbmux/glue constructors and APIs are not
+compiled or linked. This deliberate deviation avoids their implicit DeviceClass
+read, pairing helpers and unconstrained allocation/release paths. All five original
+source pins remain preserved for provenance; only OpenSSL and libplist are built.
+The four-DLL closure is cardryft-device → SSL/crypto/plist; SSL also imports crypto.
+No Apple binaries or GPL-only daemon/device tools are included.
+
+### TLS/trust and metadata
+
+Original 4D used SSL_VERIFY_NONE, security level zero and accepted StartSession
+without SSL. The new path requires boolean true EnableSessionSSL and a bounded
+nonempty SessionID, TLS 1.2 minimum, security level 2, SSL_VERIFY_PEER with normal
+verification, and exact X509_cmp against the existing record's DeviceCertificate.
+The only trust anchor is that record's RootCertificate. RootPrivateKey and
+RootCertificate supply the existing client credentials, following the pinned
+Windows path. There is no DNS/Web-PKI hostname or invented Apple authority, no
+default roots/certificate-directory input, verification bypass or plaintext metadata
+fallback. Invalid/expired/weak/unrelated peers fail closed; record authority and
+non-interactive key parsing still require the explicit gates above. Older records or
+iOS TLS behavior may be incompatible; no iOS 27 compatibility is claimed.
+
+Trust material stays in bounded transient native memory, never managed objects,
+logs or files. Raw frames and plist scalar strings/data are cleansed; OpenSSL owns
+key material until session free. This reduces lifetime but does not promise erasure
+of every allocator copy/OS page. ReadPairRecord returns the whole existing vendor
+record; unrelated trust fields are not exported, used for content access or saved.
+
+Bootstrap is ListDevices, then for an enumerated USB identifier: ReadPairRecord,
+ReadBUID, Connect to lockdown port 62078, QueryType, StartSession, authenticated TLS.
+QueryType/StartSession are protocol bootstrap, not GetValue metadata. **No DeviceClass
+or pre-authentication ProductVersion read exists.** Thereafter only four enum values
+map to DeviceName, ProductType, ProductVersion and BuildVersion; unknown values fail
+before I/O. No generic-key/plist, Pair/ValidatePair/Unpair, record save/delete,
+StartService, filesystem/app/content/Wallet function is exposed. No mutation request
+exists in source. Opaque vendor/device side effects remain experimentally unproven.
+
+### Transport / dynamic loading
+
+The owner approved only literal **127.0.0.1:27015 local Windows USB-service IPC**,
+resolving the blanket TCP prohibition. No DNS, alternate address/port, proxy/tunnel
+or user socket is used. USBMUXD_SOCKET_ADDRESS (the pinned usbmux transport override)
+is rejected even when empty; its value is never consumed. Network entries are
+skipped before identifier/address extraction. Unknown types/duplicates/oversized
+snapshots fail. USB ID reuse between enumeration/connect depends on the host service
+and remains part of the pending host-authority review. Application code changes no
+process/user/system environment; build/test children receive isolated environments.
+
+OpenSSL keeps no-autoload-config/no-dso/no-module/no-engine/no-comp/no-zlib/no-legacy/
+no-sock/no-apps/no-tests and a built-in default provider. The existing build-info
+and BCrypt RNG patches are preserved; no config/provider/engine/compression fallback
+exists. The shim introduces no dynamic module loading. Source/configuration and
+static imports/no delay imports/forwarders are reviewed together; PE imports alone
+are not a dynamic-loading proof.
+
+### Limits
+
+| Boundary | Implemented limit |
+| --- | --- |
+| Snapshot/enumeration | 32 input entries, 32 iterations; reject duplicates/unknown types; never connect network entries |
+| Identifier/HostID/BUID | 1–128 ASCII letters/digits/hyphens |
+| Metadata | 1024 UTF-8 bytes and 256 UTF-16 units, strict UTF-8/no embedded NUL, no truncation |
+| Native → managed | Caller-owned 32 × 136-byte records (4352 bytes) or 1025-byte buffer; only opaque ownership handles otherwise |
+| Raw frames/plist | 65536 bytes before receive allocation; mux length includes 16-byte header |
+| libplist | 64 KiB input, depth 16, nodes/expanded binary references 1024; binary scalar 128 KiB and aggregate scalar bytes 1 MiB |
+| TLS | Record PEM/certificate list 16 KiB; pending BIO 64 KiB; I/O chunk 16 KiB |
+| Deadlines | Monotonic 5 s enumeration, 10 s per-device connect plus all four queries, 30 s refresh |
+| Cleanup | Local SSL/BIO/plist/socket/context free; no StopSession/SSL_shutdown/send/recv/wait; hard wall-clock ceiling unproven |
+
+libplist-cardryft-bounds.patch changes src/bplist.c, src/xplist.c and src/plist.c:
+input/depth/node/reference-expansion/scalar limits and scalar/data cleansing.
+Counting expanded references prevents small binary plists expanding indefinitely.
+Third-party allocation failure handling is not claimed to be a memory-safety proof.
+Global heap, crypto CPU/key complexity and cleanup ceilings remain open gates.
+
+## Exact ABI / ownership
+
+All declarations are in [cardryft_device.h](../../native-build/shim/cardryft_device.h).
+Windows x64 C/cdecl, uint32 and 32-bit enums; CardryftUsbDevice is 136 bytes, ID at
+0 and 129-byte NUL-terminated ASCII identifier at 4, followed by three padding bytes.
+
+| Export | Ownership / failure |
+| --- | --- |
+| uint32_t cardryft_abi_version(void) | No allocation/I/O; 0x00010000 |
+| CardryftError cardryft_initialize(CardryftContext **context) | Non-null out address; success owns context, error NULL; matching cardryft_release; no socket created |
+| CardryftError cardryft_enumerate_usb(CardryftContext*, CardryftUsbDevice*, uint32_t, uint32_t*) | Borrowed live context; caller-owned array/capacity 1–32/count; valid-call failure clears output/count; no owning array returned |
+| CardryftError cardryft_open_existing_trust(CardryftContext*, const char*, CardryftSession**) | Borrowed NUL-terminated ASCII snapshot ID/context; error NULL, success owns session; context outlives session; matching cardryft_release |
+| CardryftError cardryft_query_metadata(CardryftSession*, CardryftMetadataField, char*, uint32_t, uint32_t*) | Borrowed live session; caller-owned 1–1025-byte UTF-8 buffer; length excludes terminator; valid-buffer failure clears output; unknown enums fail before I/O |
+| void cardryft_release(void*) | Consumes one valid owner once, NULL no-op; arbitrary/duplicate pointers invalid; local cleanup only |
+
+Errors 0–9 are success/invalid argument/transport/not trusted/restricted/invalid
+response/limit/timeout/no device/no memory. Unknown codes fail as invalid response;
+timeouts map to generic unavailable transport. Diagnostics contain no identifiers,
+certificates or native error text. NativeShimAbi binds only six symbols. SafeHandles
+retain context/module parents, serialize each owner's work, hold references across
+in-flight calls and release once. No owning IntPtr leaves interop. Sessions retain
+contexts so Winsock cleanup cannot run first. Normal discovery never composes this ABI.
+
+## Loader / recipient source route
+
+HardenedRuntimeManifest.cs compiles exact names/sizes/SHA/import sets; runtime JSON
+cannot alter pins. Validation confines four exact entries to normalized absolute
+local app-root/native/win-x64, no extra files/directories, UNC/device/network paths,
+ADS/traversal/reparse ancestors/files. Ancestors are held without delete sharing and
+files without write/delete sharing through validation/loading. Final opened-file
+paths/attributes are checked from OS handles, closing the pre-open reparse race.
+Bounded AMD64 PE32+,
+zero timestamps, exact imports/six root exports, no delay imports/forwarders are
+checked. Windows loading rejects preloaded native basenames, uses absolute
+LoadLibraryExW with DLL_LOAD_DIR|SYSTEM32 and checks loaded paths. No PATH/CWD/global
+search mutation exists. Trusted Windows system libraries and uncompromised host/
+process are assumptions. The promotion constant remains false.
+
+LGPL-3.0 section 4(d)(0) is addressed through an explicit **modified application
+source/recombination route**, not an unsigned-DLL runtime override. Compatible
+modified libplist is rebuilt; a recipient-controlled MIT source copy deliberately
+regenerates its compiled hash pin and rebuilds. Official pins must reject the changed
+DLL. CardryftNativeOfflineProbe=true compiles only --native-offline-probe: validate,
+load/version, initialize/free, show/close WinForms. It cannot enumerate/open/query or
+enable the inactive backend. Ordinary builds omit the executable probe branch.
+Matching app/library/compiler source, patches, notices and workflow are packaged.
+Actual results are evidence, not legal certainty or release authorization.
+
+## Validation and remaining gate
+
+4F-A/B were clean independent native compilations, followed by a failed TLS fixture
+which reused root/device subjects and captured errors too late. Distinct subjects
+and immediate SSL_get_error capture pass the unchanged positive/negative assertions.
+A narrow verified completion ran only corrected fixtures, preserving original logs.
+The comparison then found GNU ld's path-derived auto image base in the shim.
+--image-base=0x180000000 fixes its preferred address while retaining ASLR/relocations.
+Fresh **4F-C/D** therefore supply the final complete clean-build pair; old 4D hashes
+are not authoritative. Exact final hashes/counts/results belong to the evidence and
+dependency manifest, not inferred success. Existing tests remain; no retries or
+assertion weakening were added.
+
+Final commands actually completed: two clean 4F-C/D builds, both PE/closure audits,
+byte comparison, compiled pin generation, recipient library/application rebuilds,
+official rejection/recipient acceptance probes and replacement parser/TLS fixtures.
+Each clean native run and the replacement fixture passed **43/43**. Final
+`.\scripts\validate.ps1` executed restore/build/test: **184/184 passed, 0 failed,
+0 skipped; 0 .NET warnings/errors**. Native C/D have two upstream compiler warnings
+each; recipient libplist has one; no compiler errors. Exact warnings, all attempts,
+four .NET validation logs and the two successful WinForms probes are recorded in
+the evidence. No test parallelism change, retry or assertion weakening occurred.
+
+Before hardware: authenticate the host listener/existing-record authority and
+reject interactive/encrypted private-key parsing; add
+adversarial crypto/resource and native error-path ABI/fuzz fixtures; measure cleanup;
+review LGPL source/install obligations; repeat all offline gates. Only then arrange
+an explicitly authorized existing-trusted USB phone experiment. Never accept Trust,
+create/modify records, relax TLS or expand keys/Wallet scope as a workaround.
+
+## Historical Milestone 4E audit
 
 Audit date: **2026-10-08**. **STOP: the Milestone 4D candidate is not approved
 for loading, promotion, redistribution as an enabled runtime, or hardware use.**

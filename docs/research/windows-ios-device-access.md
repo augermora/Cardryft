@@ -1,5 +1,25 @@
 # Windows ↔ iPhone device access research
 
+## Milestone 4F constrained candidate (2026-10-08)
+
+The [new safety report](native-runtime-safety.md) describes a source-owned six-call
+C ABI with pinned OpenSSL/libplist dependencies. General-purpose libimobiledevice,
+usbmux and glue APIs are avoided; their pinned sources remain protocol references.
+This changes the original conditional wrapper recommendation below, without claiming
+an Apple-supported protocol or iOS 27 compatibility. The owner approved only literal
+127.0.0.1:27015 Windows USB-service IPC; alternate endpoints/network devices are forbidden.
+
+Memory-only TLS fixtures exercise normal peer verification, exact matching against
+the existing record's device certificate, TLS 1.2 minimum and security level 2.
+No SSL/valid SessionID means failure; no DeviceClass/prefetch, pairing or service ABI
+exists. Four typed metadata strings remain the whole future scope.
+
+**Hardware readiness is No.** Listener identity/record provenance is unauthenticated;
+a coherent invented record can pass internally consistent TLS tests. Crypto heap/CPU
+and cleanup ceilings need adversarial validation. These gates keep assets staged and
+normal discovery inactive. No Apple IPC, records, USB enumeration or phone was accessed.
+The explicit source-build probe tests ABI/context lifetime and WinForms startup only.
+
 ## Milestone 4E runtime decision (2026-10-08)
 
 The [pinned-source runtime/ABI audit](native-runtime-safety.md) rejects the exact

@@ -1,5 +1,40 @@
 # Third-party native dependency notices and compliance ledger
 
+## Milestone 4F candidate and source recombination
+
+The new staged selection compiles OpenSSL 3.6.5, libplist C/libcnary 2.7.0 and the
+MIT Cardryft-owned narrow C shim. libimobiledevice/glue/libusbmuxd/GPL device tools/
+Apple components are not compiled or linked. Their pinned archives remain research
+inventory with unchanged licenses. The historical 4D ledger below is preserved.
+
+The 2026-10-08 libplist patch changes src/bplist.c, src/xplist.c and src/plist.c for
+input/expansion/depth/node bounds and scalar/data cleansing. OpenSSL build-text and
+BCrypt RNG patches remain as documented. Exact source/patch hashes are in
+native-build/sources-lock.json. The independently authored C boundary/fixtures are
+MIT under LICENSE, referencing pinned protocol facts; no legal certainty about
+derivation or distribution is asserted.
+
+libplist/libcnary retain LGPL-2.1-or-later and file-specific notices. The candidate
+uses the LGPL-3.0 source/recombination route with Apache-2.0 OpenSSL; the application
+stays MIT. Full LGPL/GPL/Apache/GCC exception/MinGW notices and corresponding source
+remain required. No Apple/Windows binary is redistributed. Cardryft adds no restriction
+on library modification/rebuilding or reverse engineering to debug such modifications.
+
+The explicit replacement workflow changes only libplist_version()'s version text,
+rebuilds the library, and builds two MIT application source copies. Official compiled
+pins reject the changed DLL. A recipient deliberately updates its compiled libplist
+pin and rebuilds; its source-build offline probe validates/loads that library and
+shows/closes WinForms without device I/O. No runtime unsigned-DLL override exists.
+Actual evidence is native-build/evidence/milestone4f-results.json. This demonstrates
+engineering for LGPL-3.0 section 4(d)(0), not legal certainty or binary-release approval.
+
+The source package includes frozen matching native recipes, original source archives,
+patches, full licenses, matching MIT application/test source and explicit release/
+replacement workflows. Supply corresponding source with equivalent access, notices
+and installation/recombination information alongside eventual binaries. Legal,
+host-authority/resource and release gates remain. **No runtime is promoted/published
+or authorized for hardware.**
+
 **Milestones 4C–4E: native audit/build material, not an approved runtime release.**
 Cardryft's own source remains MIT under LICENSE. This document does not relicense
 third-party code or assert completed distribution compliance. Existing managed

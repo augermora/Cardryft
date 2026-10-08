@@ -112,6 +112,39 @@
       "project": "openssl",
       "license": "Cardryft changes MIT; upstream context retains upstream license",
       "description": "Use BCrypt system-preferred RNG with MinGW instead of registry-selected legacy CSPs."
+    },
+    {
+      "file": "patches/libplist-cardryft-bounds.patch",
+      "sha256": "1ad5f91b5500f27bcb8b21d64580719c3809d79755357fc421212ecb5e2b655a",
+      "project": "libplist",
+      "license": "Cardryft changes MIT; upstream context retains LGPL-2.1-or-later",
+      "description": "4F: bound plist frames, nodes, depth, repeated-reference scalar expansion; clear scalar buffers on release."
+    }
+  ],
+  "buildSources": [
+    "openssl",
+    "libplist"
+  ],
+  "localSources": [
+    {
+      "file": "shim/cardryft_device.c",
+      "sha256": "f4df08dc29e24732e7590b0b441a24a2d84d830cbb241f391ccfae6deb1a84b1",
+      "license": "MIT"
+    },
+    {
+      "file": "shim/cardryft_device.h",
+      "sha256": "c70f0d8402594823cd64ae614fde5d042d4938cd5e944a0f4bf9f66e5932bb01",
+      "license": "MIT"
+    },
+    {
+      "file": "shim/cardryft.exports",
+      "sha256": "74fd69a1e20b18c99035bdeefc62b44ca3d73fec32a3158b47bc1ca72be3405a",
+      "license": "MIT"
+    },
+    {
+      "file": "shim/tests.c",
+      "sha256": "8474ddf288ef91e942e38fe6f04f5e9c8099062fb00e202f30ab6adcee2b2056",
+      "license": "MIT"
     }
   ]
 }

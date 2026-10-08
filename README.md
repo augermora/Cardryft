@@ -4,6 +4,14 @@ Privacy-first, open-source Windows x64 desktop editor for custom card artwork.
 Cardryft works offline and does not interact with Apple Wallet, iPhones, devices,
 private iOS protocols, payment credentials, telemetry, networking, or cloud services.
 
+Milestone 4F adds a **staged offline native candidate**, not enabled device access.
+Its six-symbol C boundary has four typed metadata keys, existing trust only, TLS
+verification and bounded framing. Host-service trust provenance and complete crypto/
+cleanup bounds still block promotion and hardware validation. Normal Refresh stays
+inactive; no iPhone or Apple Wallet was accessed. Only fixed 127.0.0.1:27015 Windows
+IPC is allowed in the future candidate. See the [safety report](docs/research/native-runtime-safety.md)
+and [rebuild/replacement instructions](native-build/README.md).
+
 ## Milestone 3: projects and editing
 
 - Import or drop one local PNG/JPG/JPEG; invalid imports preserve current work.

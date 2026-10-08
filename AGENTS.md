@@ -6,8 +6,9 @@ Cardryft is a privacy-first, open-source Windows x64 desktop application for
 creating and managing custom Apple Wallet card artwork. It uses C# / .NET 10,
 WinForms, xUnit, and the MIT license. Preserve LICENSE and existing repository
 files. Milestone 3 adds offline project persistence, history, and async preview.
-Milestone 4B currently implements only an inactive native preflight and fake-testable
-read-only USB boundary. Real communication is blocked until native/interop review;
+Milestone 4F adds a staged C candidate, hardened loader and offline ABI fixtures
+alongside inactive preflight and a fake-testable read-only USB boundary.
+Real communication is blocked by host-authority/resource gates;
 Apple Wallet integration remains prohibited.
 
 ## Architecture
@@ -46,9 +47,10 @@ Apple Wallet integration remains prohibited.
 
 ## Security restrictions
 
-For the current Milestone 4B preflight:
+For the current device boundary and Milestone 4F candidate:
 
-- Do not access Apple Wallet. No real device call or native DLL loading is enabled.
+- Do not access Apple Wallet. Normal discovery must not load DLLs or call devices;
+  source-owned offline ABI probes are permitted only under the exception below.
   If no safe exact x64 native closure exists, stop at tested abstractions and report
   the blocker. Never adopt an opaque tool distribution or redistribute Apple binaries.
   A later reviewed backend may query only DeviceName, ProductType, ProductVersion
@@ -70,7 +72,8 @@ For the current Milestone 4B preflight:
   Normal NuGet restore and the required .NET/xUnit validation toolchain are allowed.
   Milestone 4D additionally authorizes the exact hash-locked repository-local native
   compiler/build/inspection toolchain in native-build, with caches/state under .local.
-  This exception does not authorize loading the device runtime, device utilities,
+  Milestone 4F additionally permits source-owned offline parser/TLS fixtures and
+  validated ABI version/initialize/release probes. These must never invoke
   USB enumeration, usbmux/lockdown calls, pairing, or hardware use. Build artifacts
   remain staged until reproducibility, dependency, licensing and interop gates pass.
 - Milestone 4E's [runtime safety audit](docs/research/native-runtime-safety.md)
@@ -82,6 +85,12 @@ For the current Milestone 4B preflight:
   cannot abort C work; SafeHandle finalizers must not perform unbounded protocol I/O.
   Keep transport endpoints immutable and reject redirects without global
   environment mutation. Native limits must precede allocation/parsing/marshalling.
+- Milestone 4F's narrow C boundary uses only the owner-approved fixed Windows IPC
+  endpoint 127.0.0.1:27015. No alternate address or environment override is allowed;
+  network-device entries must never be connected. The default application backend
+  stays inactive until all promotion gates pass and hardware use is authorized.
+  A source-owned offline probe may load a hash-validated candidate and initialize/
+  free its context, but may not enumerate/open/query devices. Never reuse 4D hashes.
 - Application recent-project state belongs in Windows LocalApplicationData under
   Cardryft, never beside the executable. Tests must inject repository-local paths;
   unavailable application data must remain nonfatal. Projects reference images
